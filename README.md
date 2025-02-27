@@ -1,6 +1,6 @@
 Group Member Names and Jobs:
 1. Olivia Brown: Team Spokesperson
-2. Cole Canen: Team Leader
+2. Noah Canen: Team Leader
 3. Cole Connell: Code Development 
 4. Ashlyn Erickson: Product Owner
 5. Adam Pannell: Deployment Manager
