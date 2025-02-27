@@ -1,4 +1,4 @@
-Group Memeber Names and Jobs:
+Group Member Names and Jobs:
 1. Olivia Brown: Team Spokesperson
 2. Cole Canen: Team Leader
 3. Cole Connell: Code Development 
