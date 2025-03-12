@@ -1,6 +1,18 @@
 import Recipe.java;
-
+import Ingredient.java;
+import javax.swing.JFrame;
+import javax.swing.JTextField;
+import javax.swing.JPanel;
+import java.awt.Dimension;
 
 static void CreateRecipe() {
-    
+    JFrame frame = new Title("enter the title of the recipe");
+    frame.setDefaultCloseOperation(Title.EXIT_ON_CLOSE);
+    JTextField textFieldTitle = new JTextField(20); // 20 columns wide
+    textFieldTitle.setPreferredSize(new Dimension(250, 40));
+    JPanel panel = new JPanel();
+    panel.add(textFieldTitle);
+    frame.getContentPane().add(panel);
+    frame.pack();
+    frame.setVisible(true);
 }
