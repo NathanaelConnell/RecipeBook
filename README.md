@@ -9,3 +9,13 @@ Group Member Names and Jobs:
 This project contains an implementation of a recipe book. This recipe
 book will allow the user to create, update, and delete recipes through an
 application, while using a database in the back-end. 
+
+### Use Cases
+
+- Create Recipe
+- Delete Recipe
+- Edit Recipe
+- Export Grocery List
+- View Recipe
+- Manage Recipes
+- Retrieve Recipes
