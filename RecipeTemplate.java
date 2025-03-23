@@ -10,28 +10,28 @@ class RecipeTemplate {
 
         JPanel panel = new JPanel();
         panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
-        panel.setBorder(new EmptyBorder(new Insets(10, 50, 50, 50))); // Added padding
+        panel.setBorder(new EmptyBorder(new Insets(20, 75, 75, 75))); // Added padding
 
         JLabel title = new JLabel("Title");
         title.setAlignmentX(Component.LEFT_ALIGNMENT);
-        title.setFont(new Font("Arial", Font.BOLD, 20));
+        title.setFont(new Font("Times New Roman", Font.BOLD, 25));
 
         JLabel image = new JLabel("Image Placeholder", SwingConstants.CENTER);
-        image.setPreferredSize(new Dimension(300, 300));
+        image.setPreferredSize(new Dimension(400, 300));
         image.setBorder(BorderFactory.createLineBorder(Color.BLACK)); // Fake border to indicate image
 
         DefaultListModel<String> ingredientsModel = new DefaultListModel<>();
         JList<String> ingredients = new JList<>(ingredientsModel);
-        ingredientsModel.addElement("Ingredient 1");
-        ingredientsModel.addElement("Ingredient 2");
+        ingredientsModel.addElement("- Ingredient 1");
+        ingredientsModel.addElement("- Ingredient 2");
         JScrollPane ingredientsPane = new JScrollPane(ingredients);
-        ingredientsPane.setPreferredSize(new Dimension(400, 200));
+        ingredientsPane.setPreferredSize(new Dimension(300, 200));
 
         JTextArea instructions = new JTextArea("Instructions:");
         instructions.setLineWrap(true);
         instructions.setWrapStyleWord(true);
         instructions.setBorder(BorderFactory.createLineBorder(Color.BLACK));
-        instructions.setPreferredSize(new Dimension(450, 150));
+        instructions.setPreferredSize(new Dimension(450, 200));
 
         panel.add(title);
         panel.add(image);
