@@ -8,21 +8,21 @@ import java.io.IOException;
 
 public class ExportGroceryList {
     private DefaultListModel<String> ingredientsModel;
-    private JPanel checkboxPanel; // Class-level variable so it's accessible in exportIngredients()
+    private JPanel checkboxPanel;
 
     public ExportGroceryList(DefaultListModel<String> ingredients) {
         this.ingredientsModel = ingredients;
 
-        // Create export frame
+        // create export frame
         JFrame exportFrame = new JFrame("Export Grocery List");
         exportFrame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         exportFrame.setSize(300, 300);
 
-        // Create panel for checkboxes
+        // create panel for checkboxes
         checkboxPanel = new JPanel();
         checkboxPanel.setLayout(new BoxLayout(checkboxPanel, BoxLayout.Y_AXIS));
 
-        // Add checkboxes for ingredients
+        // add checkboxes for ingredients
         for (int i = 0; i < ingredientsModel.getSize(); i++) {
             JCheckBox checkbox = new JCheckBox(ingredientsModel.getElementAt(i));
             checkboxPanel.add(checkbox);
@@ -30,22 +30,22 @@ public class ExportGroceryList {
 
         JScrollPane scrollPane = new JScrollPane(checkboxPanel);
 
-        // Export button
+        // create export button
         JButton exportButton = new JButton("Export Grocery List");
         exportButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                exportIngredients(); // Calls the fixed export method
+                exportIngredients();
             }
         });
 
-        // Create a main panel to hold all components
+        // create main panel to hold all components
         JPanel mainPanel = new JPanel();
         mainPanel.setLayout(new BorderLayout());
         mainPanel.add(scrollPane, BorderLayout.CENTER);
         mainPanel.add(exportButton, BorderLayout.SOUTH);
 
-        // Add main panel to frame
+        // add main panel to frame
         exportFrame.add(mainPanel);
         exportFrame.setVisible(true);
     }
@@ -53,14 +53,13 @@ public class ExportGroceryList {
     private void exportIngredients() {
         try (BufferedWriter writer = new BufferedWriter(new FileWriter("groceryList.txt"))) {
             for (Component comp : checkboxPanel.getComponents()) {
-                if (comp instanceof JCheckBox checkBox) { // Cast to JCheckBox
+                if (comp instanceof JCheckBox checkBox) {
                     if (checkBox.isSelected()) {
                         writer.write(checkBox.getText());
                         writer.newLine();
                     }
                 }
             }
-            writer.flush();
             JOptionPane.showMessageDialog(null, "Grocery list exported successfully!");
         } catch (IOException e) {
             JOptionPane.showMessageDialog(null, "Error Saving File: " + e.getMessage());
