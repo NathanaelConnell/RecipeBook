@@ -18,6 +18,22 @@ class Recipe {
     ArrayList<Ingredient> ingredients, ArrayList<String> instructions) {
         //Constructor
     }
+
+    public String getTitle() {return title;}
+    
+    public void setTitle(String newTitle) {title = newTitle;}
+
+    public String getDescription() {return description;}
+    
+    public void setDescription() (String newDescription) {description = newDescription;}
+
+    public String getImage() {return image;}
+    
+    public void setImage() (String newImage) {image = newImage;}
+
+    public String getInstructions() {return instructions;}
+    
+    public void setInstructions() (String newInstructions) {instructions = newInstructions;}
     
 
     public void importImage() {
