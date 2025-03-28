@@ -1,3 +1,4 @@
+import java.util.HashMap
 import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.File;
@@ -11,8 +12,9 @@ class Recipe {
     private String title;
     private String description;
     private BufferedImage image;
-    private ArrayList<Ingredient> ingredients;
     private ArrayList<String> instructions;
+    private HashMap<Ingredient, IngredientSize> ingredients;
+    
 
     public Recipe (String title, String description, BufferedImage image, 
     ArrayList<Ingredient> ingredients, ArrayList<String> instructions) {
