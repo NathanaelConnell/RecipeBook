@@ -28,6 +28,10 @@ class Recipe {
     
     public void setInstructions(ArrayList<String> instructions) {this.instructions = instructions;}
 
+    public HashMap<Ingredient, IngredientSize> getIngredients() {return ingredients;}
+
+    public void setIngredients(HashMap<Ingredient, IngredientSize> ingredients) {this.ingredients = ingredients;}
+
     public void importImage() {
         JFileChooser fileChooser = new JFileChooser();
         FileNameExtensionFilter filter = new FileNameExtensionFilter("Image Files (JPG, PNG, GIF)", "jpg", "jpeg", "png", "gif");
