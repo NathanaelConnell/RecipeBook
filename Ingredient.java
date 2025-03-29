@@ -1,11 +1,10 @@
 class Ingredient {
     String name;
-    public Ingredient(String title) {
-        this.setName(title);
+    public Ingredient(String name) {
+        this.name = name;
     }
 
     public String getName() {return name;}
 
-    public void setName(newName) {name = newName;}
-    
+    public void setName(String name) {this.name = name;}
 }

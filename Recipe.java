@@ -1,5 +1,4 @@
-import java.util.HashMap
-import java.awt.*;
+import java.util.HashMap;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
@@ -14,29 +13,20 @@ class Recipe {
     private BufferedImage image;
     private ArrayList<String> instructions;
     private HashMap<Ingredient, IngredientSize> ingredients;
-    
-
-    public Recipe (String title, String description, BufferedImage image, 
-    ArrayList<Ingredient> ingredients, ArrayList<String> instructions) {
-        //Constructor
-    }
 
     public String getTitle() {return title;}
     
-    public void setTitle(String newTitle) {title = newTitle;}
+    public void setTitle(String title) {this.title = title;}
 
     public String getDescription() {return description;}
     
-    public void setDescription() (String newDescription) {description = newDescription;}
+    public void setDescription(String description) {this.description = description;}
 
-    public String getImage() {return image;}
-    
-    public void setImage() (String newImage) {image = newImage;}
+    public BufferedImage getImage() {return image;}
 
-    public String getInstructions() {return instructions;}
+    public ArrayList<String> getInstructions() {return instructions;}
     
-    public void setInstructions() (String newInstructions) {instructions = newInstructions;}
-    
+    public void setInstructions(ArrayList<String> instructions) {this.instructions = instructions;}
 
     public void importImage() {
         JFileChooser fileChooser = new JFileChooser();
