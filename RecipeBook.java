@@ -1,4 +1,5 @@
 import javax.swing.*;
+import javax.swing.border.EmptyBorder;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -114,7 +115,7 @@ class RecipeBook {
     titleLabel.setFont(new Font("Arial", Font.BOLD, 16));
     recipesFrame.add(titleLabel, BorderLayout.NORTH);
 
-    // Left panel with filter buttons (including "All")
+    // Left panel with filter buttons
     JPanel filterPanel = new JPanel();
     filterPanel.setLayout(new BoxLayout(filterPanel, BoxLayout.Y_AXIS));
     String[] filters = { "All", "Entree", "Appetizer", "Desert", "Drinks" };
@@ -125,20 +126,33 @@ class RecipeBook {
         @Override
         public void actionPerformed(ActionEvent e) {
           System.out.println("Filter selected: " + filter);
-          // Update the center panel based on the filter button pressed
         }
       });
       filterPanel.add(btn);
-      filterPanel.add(Box.createRigidArea(new Dimension(0, 10))); // Add spacing between buttons
+      filterPanel.add(Box.createRigidArea(new Dimension(0, 10))); // Spacing
     }
     recipesFrame.add(filterPanel, BorderLayout.WEST);
 
+    // Export Grocery List Button
+    JButton exportButton = new JButton("Export Grocery List");
+    exportButton.addActionListener(new ActionListener() {
+        @Override
+        public void actionPerformed(ActionEvent e) {
+            ExportGroceryListFrame(); // Call the new method
+        }
+    });
+
+    // Panel for buttons (added to bottom)
+    JPanel buttonPanel = new JPanel();
+    buttonPanel.add(exportButton);
+    recipesFrame.add(buttonPanel, BorderLayout.SOUTH); // Add button at the bottom
+
     // Main panel in the center for displaying recipe titles
     JPanel mainPanel = new JPanel(new BorderLayout());
-    // Compound border: line border with padding
     mainPanel.setBorder(BorderFactory.createCompoundBorder(
         BorderFactory.createLineBorder(Color.DARK_GRAY, 2),
         BorderFactory.createEmptyBorder(10, 10, 10, 10)));
+
     JLabel placeholder = new JLabel("Recipe Titles Will Appear Here", SwingConstants.CENTER);
     mainPanel.add(placeholder, BorderLayout.CENTER);
     recipesFrame.add(mainPanel, BorderLayout.CENTER);
@@ -153,5 +167,16 @@ class RecipeBook {
     frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
     frame.getContentPane().setBackground(bgColor);
     frame.setVisible(true);
+  }
+
+  // Frame for ExportGroceryList
+  private static void ExportGroceryListFrame() {
+    DefaultListModel<String> ingredients = new DefaultListModel<>();
+    ingredients.addElement("Milk");
+    ingredients.addElement("Eggs");
+    ingredients.addElement("Bread");
+    ingredients.addElement("Cheese");
+
+    new ExportGroceryList(ingredients); // Open the ExportGroceryList frame
   }
 }
