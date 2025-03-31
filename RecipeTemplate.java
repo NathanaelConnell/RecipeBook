@@ -1,6 +1,11 @@
 import java.awt.*;
+import java.util.ArrayList;
+
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
+import Recipe.java;
+import Ingredient.java;
+
 
 class RecipeTemplate {
     public static void main(String[] args) {
@@ -21,6 +26,13 @@ class RecipeTemplate {
         JLabel image = new JLabel("Image Placeholder", SwingConstants.CENTER);
         image.setPreferredSize(new Dimension(400, 200));
         image.setBorder(BorderFactory.createLineBorder(Color.BLACK));
+
+        // Editable description
+        JTextArea description = new JTextArea("description:");
+        description.setLineWrap(true);
+        description.setWrapStyleWord(true);
+        description.setBorder(BorderFactory.createLineBorder(Color.BLACK));
+        description.setPreferredSize(new Dimension(450, 200));
 
         // Editable Ingredients List
         DefaultListModel<String> ingredientsModel = new DefaultListModel<>();
@@ -50,6 +62,7 @@ class RecipeTemplate {
 
         panel.add(title);
         panel.add(image);
+        panel.add(description);
         panel.add(ingredientsPane);
         panel.add(ingredientInput);
         panel.add(addIngredientButton);
@@ -57,5 +70,23 @@ class RecipeTemplate {
 
         frame.add(panel);
         frame.setVisible(true);
+
+
+        JButton addSaveButton = new JButton("Save");
+        addSaveButton.addActionListener(e -> {
+
+            String textTitle = title.getText();
+            String textDescription = description.getText();
+            //ArrayList<String> instructionsArrayList = instructions.getText();
+            // We currently have instructions as an array list inside of the class but that's 
+            //not how we set up inside of the template so we need to discuss and choose which one we're doing
+            //I don't know how to do this HashMap stuff I'm going to try and discuss
+            //it with the person who made the recipe. Java file
+
+            setTitle(textTitle);
+            setDescription(String description);
+            setIngredients(HashMap<Ingredient, IngredientSize> ingredients);
+            //setInstructions(instructionsArrayList);
+        });
     }
 }
