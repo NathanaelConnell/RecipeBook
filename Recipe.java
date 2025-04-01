@@ -11,7 +11,7 @@ class Recipe {
     private String title;
     private String description;
     private BufferedImage image;
-    private ArrayList<String> instructions;
+    private String instructions;
     private HashMap<Ingredient, IngredientSize> ingredients;
 
     public String getTitle() {return title;}
@@ -20,13 +20,13 @@ class Recipe {
 
     public String getDescription() {return description;}
     
-    public void setDescription(String description) {this.description = description;}
+    public void setDescription (String description) {this.description = description;}
 
     public BufferedImage getImage() {return image;}
 
-    public ArrayList<String> getInstructions() {return instructions;}
+    public String getInstructions() {return instructions;}
     
-    public void setInstructions(ArrayList<String> instructions) {this.instructions = instructions;}
+    public void setInstructions(String instructions) {this.instructions = instructions;}
 
     public HashMap<Ingredient, IngredientSize> getIngredients() {return ingredients;}
 
