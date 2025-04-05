@@ -4,10 +4,13 @@ import java.awt.*;
 import java.awt.FlowLayout;
 import java.awt.event.FocusEvent;
 import java.awt.event.FocusListener;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.io.BufferedWriter;
+import java.io.FileWriter;
 
 class RecipeBook {
   public static void main(String[] args) {
@@ -135,18 +138,18 @@ class RecipeBook {
           Matcher m = p.matcher(size);
 
           int numerator = 0;
-          int denominator = 0;
+          int denominator = 1;
           String units = "";
 
           if (m.find()) {numerator = Integer.parseInt(m.group());}
-
+          System.out.println(numerator);
           if (m.find()) {denominator = Integer.parseInt(m.group());}
 
           p = Pattern.compile("[a-zA-z]+");
           m = p.matcher(size);
           if (m.find()) {units = m.group();}
 
-          if (!ingredient.isEmpty() && !size.isEmpty() && numerator != 0) {
+          if (!ingredient.isEmpty() && !ingredient.equals("Ingredient") && !size.isEmpty() && numerator != 0) {
             Fraction amount = new Fraction(numerator, denominator);
             ingredients.put(ingredient, new IngredientSize(amount, units));
 
@@ -182,7 +185,14 @@ class RecipeBook {
         recipe.setDescription(description.getText());
         recipe.setIngredients(ingredients);
         recipe.setInstructions(instructions.getText());
-        System.out.println(recipe);
+
+        String fileName = "example.txt";
+
+        try (BufferedWriter writer = new BufferedWriter(new FileWriter(fileName))) {
+          writer.write(recipe.toString());
+        } catch (IOException ex) {
+          System.err.println(ex.getMessage());
+        }
       });
 
       JPanel inputRow = new JPanel();

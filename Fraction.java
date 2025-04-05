@@ -1,16 +1,17 @@
 public class Fraction {
     int numerator;
-    int denominator;
+    int denominator = 1;
 
     public Fraction(int numerator, int denominator) {
         this.numerator = numerator;
-        this.denominator = denominator;
-        reduce();
+        if(denominator > 1) {
+            this.denominator = denominator;
+            reduce();
+        }
     }
 
     public Fraction(int numerator) {
         this.numerator = numerator;
-        denominator = 0;
     }
 
     public int getNumerator() {return numerator;}
@@ -19,12 +20,12 @@ public class Fraction {
 
     public void setNumerator(int numerator) {
         this.numerator = numerator;
-        reduce();
+        if(denominator > 1) {reduce();}
     }
 
     public void setDenominator(int denominator) {
         this.denominator = denominator;
-        reduce();
+        if(denominator > 1) {reduce();}
     }
 
     private int gcd(int a, int b) {
@@ -45,7 +46,7 @@ public class Fraction {
 
     public String toString() {
         String frac = "";
-        frac += (denominator==0 ? numerator: numerator + "/" + denominator);
+        frac += (denominator <=1 ? numerator: numerator + "/" + denominator);
         return frac;
     }
 }
