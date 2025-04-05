@@ -142,7 +142,6 @@ class RecipeBook {
           String units = "";
 
           if (m.find()) {numerator = Integer.parseInt(m.group());}
-          System.out.println(numerator);
           if (m.find()) {denominator = Integer.parseInt(m.group());}
 
           p = Pattern.compile("[a-zA-z]+");
