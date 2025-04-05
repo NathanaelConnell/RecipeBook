@@ -7,6 +7,8 @@ import javax.swing.border.EmptyBorder;
 
 class RecipeTemplate {
     public static void main(String[] args) {
+        Recipe test = new Recipe();
+
         JFrame frame = new JFrame("Recipe");
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.setSize(500, 700);
@@ -81,10 +83,11 @@ class RecipeTemplate {
             //I don't know how to do this HashMap stuff I'm going to try and discuss
             //it with the person who made the recipe. Java file
 
-            setTitle(textTitle);
-            setDescription(String description);
-            setIngredients(HashMap<Ingredient, IngredientSize> ingredients);
+            test.setTitle(textTitle);
+            test.setDescription(textDescription);
+            //test.setIngredients(HashMap<Ingredient, IngredientSize> ingredients);
             //setInstructions(instructionsArrayList);
+            System.out.println(test);
         });
     }
 }
