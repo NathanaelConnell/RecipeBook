@@ -1,6 +1,6 @@
 class IngredientSize {
-    Fraction amount;
-    String unit;
+    private Fraction amount;
+    private String unit;
 
     public IngredientSize(Fraction amount, String unit) {
         this.amount = amount;
@@ -14,4 +14,6 @@ class IngredientSize {
     public void setAmount(Fraction amount) {this.amount = amount;}
 
     public void setUnit(String unit) {this.unit = unit;}
+
+    public String toString() {return amount + " " + unit;}
 }

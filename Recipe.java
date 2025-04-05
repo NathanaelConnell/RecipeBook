@@ -2,7 +2,6 @@ import java.util.HashMap;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
 import javax.imageio.ImageIO;
 import javax.swing.*;
 import javax.swing.filechooser.FileNameExtensionFilter;
@@ -12,7 +11,7 @@ class Recipe {
     private String description;
     private BufferedImage image;
     private String instructions;
-    private HashMap<Ingredient, IngredientSize> ingredients;
+    private HashMap<String, IngredientSize> ingredients;
 
     public String getTitle() {return title;}
     
@@ -28,9 +27,9 @@ class Recipe {
     
     public void setInstructions(String instructions) {this.instructions = instructions;}
 
-    public HashMap<Ingredient, IngredientSize> getIngredients() {return ingredients;}
+    public HashMap<String, IngredientSize> getIngredients() {return ingredients;}
 
-    public void setIngredients(HashMap<Ingredient, IngredientSize> ingredients) {this.ingredients = ingredients;}
+    public void setIngredients(HashMap<String, IngredientSize> ingredients) {this.ingredients = ingredients;}
 
     public void importImage() {
         JFileChooser fileChooser = new JFileChooser();
@@ -54,5 +53,15 @@ class Recipe {
                 JOptionPane.showMessageDialog(null, "Error uploading image: " + e.getMessage());
             }
         }
+    }
+
+    public String toString() {
+        StringBuilder output = new StringBuilder("Title: " + title + "\nDescription: " + description + "\nIngredients: ");
+        for(String ingredient: ingredients.keySet()) {
+            output.append("\n").append(ingredients.get(ingredient)).append(" ").append(ingredient);
+        }
+        output.append("\nInstructions: ").append(instructions);
+
+        return output.toString();
     }
 }
