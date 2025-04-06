@@ -1,9 +1,13 @@
+import javax.imageio.ImageIO;
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
+import javax.swing.filechooser.FileNameExtensionFilter;
 import java.awt.*;
 import java.awt.FlowLayout;
 import java.awt.event.FocusEvent;
 import java.awt.event.FocusListener;
+import java.awt.image.BufferedImage;
+import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -65,10 +69,44 @@ class RecipeBook {
         }
       });
 
-      // Image Placeholder
-      JLabel image = new JLabel("Image Placeholder", SwingConstants.CENTER);
-      image.setPreferredSize(new Dimension(400, 200));
-      image.setBorder(BorderFactory.createLineBorder(Color.BLACK));
+
+      JLabel imageLabel = new JLabel("Image Placeholder", SwingConstants.CENTER);
+      imageLabel.setPreferredSize(new Dimension(300, 300));
+      imageLabel.setBorder(BorderFactory.createLineBorder(Color.BLACK));
+
+      JButton importImage = new JButton("Upload Image");
+
+      importImage.addActionListener(e1 -> {
+        BufferedImage image;
+          JFileChooser fileChooser = new JFileChooser();
+          FileNameExtensionFilter filter = new FileNameExtensionFilter("Image Files (JPG, PNG, GIF)", "jpg", "jpeg", "png", "gif");
+          fileChooser.setFileFilter(filter);
+
+          int result = fileChooser.showOpenDialog(null);
+          if (result == JFileChooser.APPROVE_OPTION) {
+            File selectedFile = fileChooser.getSelectedFile();
+            try {
+              BufferedImage selectedImage = ImageIO.read(selectedFile);
+              if (selectedImage != null) {
+                int cropLength = Math.min(selectedImage.getWidth(), selectedImage.getHeight());
+                image = selectedImage.getSubimage(Math.max((selectedImage.getWidth() - cropLength) / 2, 0),
+                        Math.max((selectedImage.getHeight() - cropLength) / 2, 0),
+                        cropLength, cropLength);
+                ImageIcon icon = new ImageIcon(image.getScaledInstance(300, 300, Image.SCALE_SMOOTH));
+                imageLabel.setIcon(icon);
+                imageLabel.setText("");
+              }
+              else {
+                JOptionPane.showMessageDialog(null, "Invalid image format.");
+              }
+            } catch (IOException ex1) {
+              JOptionPane.showMessageDialog(null, "Error uploading image: " + ex1.getMessage());
+            }
+          }
+      });
+
+
+
 
       // Editable description
       JTextArea description = new JTextArea("Description");
@@ -184,6 +222,10 @@ class RecipeBook {
         recipe.setDescription(description.getText());
         recipe.setIngredients(ingredients);
         recipe.setInstructions(instructions.getText());
+        Icon icon = imageLabel.getIcon();
+        BufferedImage recipeImage = new BufferedImage(icon.getIconWidth(),
+                icon.getIconHeight(),BufferedImage.TYPE_INT_RGB);
+        recipe.setImage(recipeImage);
 
         String fileName = "example.txt";
 
@@ -199,8 +241,13 @@ class RecipeBook {
       inputRow.add(ingredientInput);
       inputRow.add(sizeInput);
 
+      JPanel imageRow = new JPanel();
+      imageRow.setLayout(new FlowLayout(FlowLayout.LEFT));
+      imageRow.add(importImage);
+      imageRow.add(imageLabel);
+
       panel.add(title);
-      panel.add(image);
+      panel.add(imageRow);
       panel.add(description);
       panel.add(ingredientsPane);
       panel.add(inputRow);

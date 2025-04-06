@@ -1,10 +1,5 @@
 import java.util.HashMap;
 import java.awt.image.BufferedImage;
-import java.io.File;
-import java.io.IOException;
-import javax.imageio.ImageIO;
-import javax.swing.*;
-import javax.swing.filechooser.FileNameExtensionFilter;
 
 class Recipe {
     private String title;
@@ -31,28 +26,8 @@ class Recipe {
 
     public void setIngredients(HashMap<String, IngredientSize> ingredients) {this.ingredients = ingredients;}
 
-    public void importImage() {
-        JFileChooser fileChooser = new JFileChooser();
-        FileNameExtensionFilter filter = new FileNameExtensionFilter("Image Files (JPG, PNG, GIF)", "jpg", "jpeg", "png", "gif");
-        fileChooser.setFileFilter(filter);
-
-        int result = fileChooser.showOpenDialog(null);
-        if (result == JFileChooser.APPROVE_OPTION) {
-            File selectedFile = fileChooser.getSelectedFile();
-            try {
-                BufferedImage selectedImage = ImageIO.read(selectedFile);
-                if (selectedImage != null) {
-                    int cropLength = Math.min(selectedImage.getWidth(), selectedImage.getHeight());
-                    image = selectedImage.getSubimage(Math.max((selectedImage.getWidth()-cropLength)/2, 0),
-                            Math.max((selectedImage.getHeight()-cropLength)/2, 0),
-                            cropLength, cropLength);
-                } else {
-                    JOptionPane.showMessageDialog(null, "Invalid image format.");
-                }
-            } catch (IOException e) {
-                JOptionPane.showMessageDialog(null, "Error uploading image: " + e.getMessage());
-            }
-        }
+    public void setImage(BufferedImage image) {
+        this.image = image;
     }
 
     public String toString() {
