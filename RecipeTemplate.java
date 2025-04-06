@@ -1,5 +1,4 @@
 import java.awt.*;
-import java.util.ArrayList;
 
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
@@ -78,8 +77,8 @@ class RecipeTemplate {
             String textTitle = title.getText();
             String textDescription = description.getText();
             //ArrayList<String> instructionsArrayList = instructions.getText();
-            // We currently have instructions as an array list inside of the class but that's 
-            //not how we set up inside of the template so we need to discuss and choose which one we're doing
+            // We currently have instructions as an array list inside the class but that's
+            //not how we set up inside the template so we need to discuss and choose which one we're doing
             //I don't know how to do this HashMap stuff I'm going to try and discuss
             //it with the person who made the recipe. Java file
 
