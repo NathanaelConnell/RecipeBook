@@ -13,7 +13,7 @@ class Recipe {
 
     Recipe() throws IOException {
         title = "Title";
-        description = "Description";
+        description = "Description (optional)";
         instructions = "Instructions";
         image = ImageIO.read(new File("Default_Image.png"));
     }

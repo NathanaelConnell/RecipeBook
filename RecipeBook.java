@@ -40,10 +40,10 @@ class RecipeBook {
       Recipe recipe;
       try {
         recipe = new Recipe();
+        recipeTemplate(recipe);
       } catch (IOException ex) {
-        throw new RuntimeException(ex);
+        JOptionPane.showMessageDialog(null, "Recipe could not be created");
       }
-      recipeTemplate(recipe);
     });
 
     // Add buttons to panel
@@ -58,11 +58,9 @@ class RecipeBook {
   }
 
   private static void recipeTemplate(Recipe recipe) {
-    //Create new recipe
     JFrame frame = new JFrame("Recipe");
     frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
     frame.setSize(500, 700);
-
     JPanel panel = new JPanel();
     panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
     panel.setBorder(new EmptyBorder(new Insets(20, 30, 30, 30))); // Adjusted padding
@@ -85,14 +83,13 @@ class RecipeBook {
       }
     });
 
+    //Editable Image
     JLabel imageLabel = new JLabel();
     imageLabel.setIcon(new ImageIcon(recipe.getImage().getScaledInstance(300, 300, Image.SCALE_SMOOTH)));
     imageLabel.setPreferredSize(new Dimension(300, 300));
     imageLabel.setBorder(BorderFactory.createLineBorder(Color.BLACK));
     JButton importImage = new JButton("Upload Image");
-    importImage.addActionListener(e1 -> {
-      uploadImage(recipe, imageLabel);
-    });
+    importImage.addActionListener(e1 -> uploadImage(recipe, imageLabel));
 
     // Editable description
     JTextArea description = new JTextArea(recipe.getDescription());
@@ -103,13 +100,13 @@ class RecipeBook {
     description.addFocusListener(new FocusListener() {
       @Override
       public void focusGained(FocusEvent e) {
-        if(description.getText().equals("Description")) {
+        if(description.getText().equals("Description (optional)")) {
           description.setText("");
         }
       }
       public void focusLost(FocusEvent e) {
         if(description.getText().isEmpty()) {
-          description.setText("Description");
+          description.setText("Description (optional)");
         }
       }
     });
@@ -154,10 +151,8 @@ class RecipeBook {
         }
       }
     });
-
-    addIngredientButton.addActionListener(event -> {
-      addIngredient(recipe, ingredientInput, sizeInput, ingredientsModel);
-    });
+    addIngredientButton.addActionListener(event ->
+            addIngredient(recipe, ingredientInput, sizeInput, ingredientsModel));
 
     // Editable Instructions
     JTextArea instructions = new JTextArea(recipe.getInstructions());
@@ -180,37 +175,25 @@ class RecipeBook {
     });
 
     JButton saveButton = new JButton("Save");
-    saveButton.addActionListener(event1 -> {
-      recipe.setTitle(title.getText());
-      recipe.setDescription(description.getText());
-      recipe.setInstructions(instructions.getText());
-      recipes.add(recipe);
-
-      String fileName = "example.txt";
-
-      try (BufferedWriter writer = new BufferedWriter(new FileWriter(fileName))) {
-        writer.write(recipe.toString());
-      } catch (IOException ex) {
-        System.err.println(ex.getMessage());
-      }
-    });
-
-    JPanel inputRow = new JPanel();
-    inputRow.setLayout(new FlowLayout(FlowLayout.LEFT));
-    inputRow.add(ingredientInput);
-    inputRow.add(sizeInput);
+    saveButton.addActionListener(e ->
+            save(recipe, title.getText(), description.getText(), instructions.getText(), frame));
 
     JPanel imageRow = new JPanel();
     imageRow.setLayout(new FlowLayout(FlowLayout.LEFT));
     imageRow.add(importImage);
     imageRow.add(imageLabel);
 
+    JPanel inputRow = new JPanel();
+    inputRow.setLayout(new FlowLayout(FlowLayout.LEFT));
+    inputRow.add(ingredientInput);
+    inputRow.add(sizeInput);
+    inputRow.add(addIngredientButton);
+
     panel.add(title);
     panel.add(imageRow);
     panel.add(description);
     panel.add(ingredientsPane);
     panel.add(inputRow);
-    panel.add(addIngredientButton);
     panel.add(instructions);
     panel.add(saveButton);
 
@@ -276,6 +259,41 @@ class RecipeBook {
     }
     else {
       JOptionPane.showMessageDialog(null, "Invalid ingredient");
+    }
+  }
+
+  private static void save(Recipe recipe, String title, String description, String instructions, JFrame frame) {
+    boolean invalidRecipe = false;
+    String error = "Invalid recipe! Please update the following fields: ";
+    if(title.equals("Title")) {
+      error += "\nTitle";
+      invalidRecipe = true;
+    }
+    if(recipe.getIngredients().isEmpty()) {
+      error += "\nIngredients";
+      invalidRecipe = true;
+    }
+    if(instructions.equals("Instructions")) {
+      error += "\nInstructions";
+      invalidRecipe = true;
+    }
+    if(invalidRecipe) {
+      JOptionPane.showMessageDialog(null, error);
+    }
+    else {
+      recipe.setTitle(title);
+      recipe.setDescription(description);
+      recipe.setInstructions(instructions);
+      recipes.add(recipe);
+
+      //Temporary test file to make sure data is saving
+      String fileName = "example.txt";
+      try (BufferedWriter writer = new BufferedWriter(new FileWriter(fileName))) {
+        writer.write(recipe.toString());
+      } catch (IOException ex) {
+        System.err.println(ex.getMessage());
+      }
+      frame.dispose();
     }
   }
 
