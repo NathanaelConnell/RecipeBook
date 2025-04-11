@@ -17,10 +17,10 @@ import java.io.BufferedWriter;
 import java.io.FileWriter;
 
 class RecipeBook {
-  public static void main(String[] args) {
-    //Recipes
-    ArrayList<Recipe> recipes = new ArrayList<>();
+  //Recipes
+  static ArrayList<Recipe> recipes = new ArrayList<>();
 
+  public static void main(String[] args) {
     // Main frame
     JFrame mainFrame = new JFrame("Main Panel");
     mainFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -38,226 +38,7 @@ class RecipeBook {
     button1.addActionListener(e -> openRecipesFrame());
 
     button2.addActionListener(e -> {
-      //Create new recipe
-      recipes.add(new Recipe());
-      Recipe recipe = recipes.get(recipes.size()-1);
-      HashMap<String, IngredientSize> ingredients = new HashMap<>();
-
-      JFrame frame = new JFrame("Recipe");
-      frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-      frame.setSize(500, 700);
-
-      JPanel panel = new JPanel();
-      panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
-      panel.setBorder(new EmptyBorder(new Insets(20, 30, 30, 30))); // Adjusted padding
-
-      // Editable Title
-      JTextField title = new JTextField("Title");
-      title.setFont(new Font("Times New Roman", Font.BOLD, 25));
-      title.setMaximumSize(new Dimension(Integer.MAX_VALUE, 40));
-      title.addFocusListener(new FocusListener() {
-        @Override
-        public void focusGained(FocusEvent e) {
-          if(title.getText().equals("Title")) {
-            title.setText("");
-          }
-        }
-        public void focusLost(FocusEvent e) {
-          if(title.getText().isEmpty()) {
-            title.setText("Title");
-          }
-        }
-      });
-
-
-      JLabel imageLabel = new JLabel("Image Placeholder", SwingConstants.CENTER);
-      imageLabel.setPreferredSize(new Dimension(300, 300));
-      imageLabel.setBorder(BorderFactory.createLineBorder(Color.BLACK));
-
-      JButton importImage = new JButton("Upload Image");
-
-      importImage.addActionListener(e1 -> {
-        BufferedImage image;
-          JFileChooser fileChooser = new JFileChooser();
-          FileNameExtensionFilter filter = new FileNameExtensionFilter("Image Files (JPG, PNG, GIF)", "jpg", "jpeg", "png", "gif");
-          fileChooser.setFileFilter(filter);
-
-          int result = fileChooser.showOpenDialog(null);
-          if (result == JFileChooser.APPROVE_OPTION) {
-            File selectedFile = fileChooser.getSelectedFile();
-            try {
-              BufferedImage selectedImage = ImageIO.read(selectedFile);
-              if (selectedImage != null) {
-                int cropLength = Math.min(selectedImage.getWidth(), selectedImage.getHeight());
-                image = selectedImage.getSubimage(Math.max((selectedImage.getWidth() - cropLength) / 2, 0),
-                        Math.max((selectedImage.getHeight() - cropLength) / 2, 0),
-                        cropLength, cropLength);
-                ImageIcon icon = new ImageIcon(image.getScaledInstance(300, 300, Image.SCALE_SMOOTH));
-                imageLabel.setIcon(icon);
-                imageLabel.setText("");
-              }
-              else {
-                JOptionPane.showMessageDialog(null, "Invalid image format.");
-              }
-            } catch (IOException ex1) {
-              JOptionPane.showMessageDialog(null, "Error uploading image: " + ex1.getMessage());
-            }
-          }
-      });
-
-
-
-
-      // Editable description
-      JTextArea description = new JTextArea("Description");
-      description.setLineWrap(true);
-      description.setWrapStyleWord(true);
-      description.setBorder(BorderFactory.createLineBorder(Color.BLACK));
-      description.setPreferredSize(new Dimension(450, 200));
-      description.addFocusListener(new FocusListener() {
-        @Override
-        public void focusGained(FocusEvent e) {
-          if(description.getText().equals("Description")) {
-            description.setText("");
-          }
-        }
-        public void focusLost(FocusEvent e) {
-          if(description.getText().isEmpty()) {
-            description.setText("Description");
-          }
-        }
-      });
-
-      // Editable Ingredients List
-      DefaultListModel<String> ingredientsModel = new DefaultListModel<>();
-      JList<String> ingredientsList = new JList<>(ingredientsModel);
-      JScrollPane ingredientsPane = new JScrollPane(ingredientsList);
-      ingredientsPane.setPreferredSize(new Dimension(300, 150));
-
-      // Text field and button to add new ingredients
-      JTextField ingredientInput = new JTextField();
-      ingredientInput.setPreferredSize(new Dimension(100, 30));
-      JTextField sizeInput = new JTextField();
-      sizeInput.setPreferredSize(new Dimension(100, 30));
-      JButton addIngredientButton = new JButton("Add Ingredient");
-      ingredientInput.setText("Ingredient");
-      sizeInput.setText("Quantity");
-      ingredientInput.addFocusListener(new FocusListener() {
-        @Override
-        public void focusGained(FocusEvent e) {
-          if(ingredientInput.getText().equals("Ingredient")) {
-            ingredientInput.setText("");
-          }
-        }
-        public void focusLost(FocusEvent e) {
-          if(ingredientInput.getText().isEmpty()) {
-            ingredientInput.setText("Ingredient");
-          }
-        }
-      });
-      sizeInput.addFocusListener(new FocusListener() {
-        @Override
-        public void focusGained(FocusEvent e) {
-          if(sizeInput.getText().equals("Quantity")) {
-            sizeInput.setText("");
-          }
-        }
-        public void focusLost(FocusEvent e) {
-          if(sizeInput.getText().isEmpty()) {
-            sizeInput.setText("Quantity");
-          }
-        }
-      });
-
-      addIngredientButton.addActionListener(event -> {
-          String ingredient = ingredientInput.getText().trim();
-          String size = sizeInput.getText().trim();
-          Pattern p = Pattern.compile("\\d+");
-          Matcher m = p.matcher(size);
-
-          int numerator = 0;
-          int denominator = 1;
-          String units = "";
-
-          if (m.find()) {numerator = Integer.parseInt(m.group());}
-          if (m.find()) {denominator = Integer.parseInt(m.group());}
-
-          p = Pattern.compile("[a-zA-z]+");
-          m = p.matcher(size);
-          if (m.find()) {units = m.group();}
-
-          if (!ingredient.isEmpty() && !ingredient.equals("Ingredient") && !size.isEmpty() && numerator != 0) {
-            Fraction amount = new Fraction(numerator, denominator);
-            ingredients.put(ingredient, new IngredientSize(amount, units));
-
-            ingredientsModel.addElement("- " + size + " " + ingredient);
-            ingredientInput.setText("");
-            sizeInput.setText("");
-          }
-      });
-
-      // Editable Instructions
-      JTextArea instructions = new JTextArea("Instructions");
-      instructions.setLineWrap(true);
-      instructions.setWrapStyleWord(true);
-      instructions.setBorder(BorderFactory.createLineBorder(Color.BLACK));
-      instructions.setPreferredSize(new Dimension(450, 200));
-      instructions.addFocusListener(new FocusListener() {
-        @Override
-        public void focusGained(FocusEvent e) {
-          if(instructions.getText().equals("Instructions")) {
-            instructions.setText("");
-          }
-        }
-        public void focusLost(FocusEvent e) {
-          if(instructions.getText().isEmpty()) {
-            instructions.setText("Instructions");
-          }
-        }
-      });
-
-      JButton addSaveButton = new JButton("Save");
-      addSaveButton.addActionListener(event1 -> {
-        recipe.setTitle(title.getText());
-        recipe.setDescription(description.getText());
-        recipe.setIngredients(ingredients);
-        recipe.setInstructions(instructions.getText());
-        Icon icon = imageLabel.getIcon();
-        BufferedImage recipeImage = new BufferedImage(icon.getIconWidth(),
-                icon.getIconHeight(),BufferedImage.TYPE_INT_RGB);
-        recipe.setImage(recipeImage);
-
-        String fileName = "example.txt";
-
-        try (BufferedWriter writer = new BufferedWriter(new FileWriter(fileName))) {
-          writer.write(recipe.toString());
-        } catch (IOException ex) {
-          System.err.println(ex.getMessage());
-        }
-      });
-
-      JPanel inputRow = new JPanel();
-      inputRow.setLayout(new FlowLayout(FlowLayout.LEFT));
-      inputRow.add(ingredientInput);
-      inputRow.add(sizeInput);
-
-      JPanel imageRow = new JPanel();
-      imageRow.setLayout(new FlowLayout(FlowLayout.LEFT));
-      imageRow.add(importImage);
-      imageRow.add(imageLabel);
-
-      panel.add(title);
-      panel.add(imageRow);
-      panel.add(description);
-      panel.add(ingredientsPane);
-      panel.add(inputRow);
-      panel.add(addIngredientButton);
-      panel.add(instructions);
-      panel.add(addSaveButton);
-
-      frame.add(panel);
-      frame.setVisible(true);
-
+        recipeTemplate();
     });
 
     // Add buttons to panel
@@ -269,6 +50,236 @@ class RecipeBook {
 
     // Make the frame visible
     mainFrame.setVisible(true);
+  }
+
+  private static void recipeTemplate() {
+    //Create new recipe
+    Recipe recipe;
+    try {
+      recipe = new Recipe();
+    } catch (IOException e) {
+      throw new RuntimeException(e);
+    }
+
+
+    JFrame frame = new JFrame("Recipe");
+    frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+    frame.setSize(500, 700);
+
+    JPanel panel = new JPanel();
+    panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
+    panel.setBorder(new EmptyBorder(new Insets(20, 30, 30, 30))); // Adjusted padding
+
+    // Editable Title
+    JTextField title = new JTextField(recipe.getTitle());
+    title.setFont(new Font("Times New Roman", Font.BOLD, 25));
+    title.setMaximumSize(new Dimension(Integer.MAX_VALUE, 40));
+    title.addFocusListener(new FocusListener() {
+      @Override
+      public void focusGained(FocusEvent e) {
+        if(title.getText().equals("Title")) {
+          title.setText("");
+        }
+      }
+      public void focusLost(FocusEvent e) {
+        if(title.getText().isEmpty()) {
+          title.setText("Title");
+        }
+      }
+    });
+
+    JLabel imageLabel = new JLabel();
+    imageLabel.setIcon(new ImageIcon(recipe.getImage().getScaledInstance(300, 300, Image.SCALE_SMOOTH)));
+    imageLabel.setPreferredSize(new Dimension(300, 300));
+    imageLabel.setBorder(BorderFactory.createLineBorder(Color.BLACK));
+    JButton importImage = new JButton("Upload Image");
+    importImage.addActionListener(e1 -> {
+      uploadImage(recipe, imageLabel);
+    });
+
+    // Editable description
+    JTextArea description = new JTextArea(recipe.getDescription());
+    description.setLineWrap(true);
+    description.setWrapStyleWord(true);
+    description.setBorder(BorderFactory.createLineBorder(Color.BLACK));
+    description.setPreferredSize(new Dimension(450, 200));
+    description.addFocusListener(new FocusListener() {
+      @Override
+      public void focusGained(FocusEvent e) {
+        if(description.getText().equals("Description")) {
+          description.setText("");
+        }
+      }
+      public void focusLost(FocusEvent e) {
+        if(description.getText().isEmpty()) {
+          description.setText("Description");
+        }
+      }
+    });
+
+    // Editable Ingredients List
+    DefaultListModel<String> ingredientsModel = new DefaultListModel<>();
+    JList<String> ingredientsList = new JList<>(ingredientsModel);
+    JScrollPane ingredientsPane = new JScrollPane(ingredientsList);
+    ingredientsPane.setPreferredSize(new Dimension(300, 150));
+
+    // Text field and button to add new ingredients
+    JTextField ingredientInput = new JTextField();
+    ingredientInput.setPreferredSize(new Dimension(100, 30));
+    JTextField sizeInput = new JTextField();
+    sizeInput.setPreferredSize(new Dimension(100, 30));
+    JButton addIngredientButton = new JButton("Add Ingredient");
+    ingredientInput.setText("Ingredient");
+    sizeInput.setText("Quantity");
+    ingredientInput.addFocusListener(new FocusListener() {
+      @Override
+      public void focusGained(FocusEvent e) {
+        if(ingredientInput.getText().equals("Ingredient")) {
+          ingredientInput.setText("");
+        }
+      }
+      public void focusLost(FocusEvent e) {
+        if(ingredientInput.getText().isEmpty()) {
+          ingredientInput.setText("Ingredient");
+        }
+      }
+    });
+    sizeInput.addFocusListener(new FocusListener() {
+      @Override
+      public void focusGained(FocusEvent e) {
+        if(sizeInput.getText().equals("Quantity")) {
+          sizeInput.setText("");
+        }
+      }
+      public void focusLost(FocusEvent e) {
+        if(sizeInput.getText().isEmpty()) {
+          sizeInput.setText("Quantity");
+        }
+      }
+    });
+
+    addIngredientButton.addActionListener(event -> {
+      addIngredient(recipe, ingredientInput, sizeInput, ingredientsModel);
+    });
+
+    // Editable Instructions
+    JTextArea instructions = new JTextArea(recipe.getInstructions());
+    instructions.setLineWrap(true);
+    instructions.setWrapStyleWord(true);
+    instructions.setBorder(BorderFactory.createLineBorder(Color.BLACK));
+    instructions.setPreferredSize(new Dimension(450, 200));
+    instructions.addFocusListener(new FocusListener() {
+      @Override
+      public void focusGained(FocusEvent e) {
+        if(instructions.getText().equals("Instructions")) {
+          instructions.setText("");
+        }
+      }
+      public void focusLost(FocusEvent e) {
+        if(instructions.getText().isEmpty()) {
+          instructions.setText("Instructions");
+        }
+      }
+    });
+
+    JButton saveButton = new JButton("Save");
+    saveButton.addActionListener(event1 -> {
+      recipe.setTitle(title.getText());
+      recipe.setDescription(description.getText());
+      recipe.setInstructions(instructions.getText());
+      recipes.add(recipe);
+
+      String fileName = "example.txt";
+
+      try (BufferedWriter writer = new BufferedWriter(new FileWriter(fileName))) {
+        writer.write(recipe.toString());
+      } catch (IOException ex) {
+        System.err.println(ex.getMessage());
+      }
+    });
+
+    JPanel inputRow = new JPanel();
+    inputRow.setLayout(new FlowLayout(FlowLayout.LEFT));
+    inputRow.add(ingredientInput);
+    inputRow.add(sizeInput);
+
+    JPanel imageRow = new JPanel();
+    imageRow.setLayout(new FlowLayout(FlowLayout.LEFT));
+    imageRow.add(importImage);
+    imageRow.add(imageLabel);
+
+    panel.add(title);
+    panel.add(imageRow);
+    panel.add(description);
+    panel.add(ingredientsPane);
+    panel.add(inputRow);
+    panel.add(addIngredientButton);
+    panel.add(instructions);
+    panel.add(saveButton);
+
+    frame.add(panel);
+    frame.setVisible(true);
+  }
+
+  private static void uploadImage(Recipe recipe, JLabel imageLabel) {
+    BufferedImage image;
+    JFileChooser fileChooser = new JFileChooser();
+    FileNameExtensionFilter filter = new FileNameExtensionFilter("Image Files (JPG, PNG, GIF)", "jpg", "jpeg", "png", "gif");
+    fileChooser.setFileFilter(filter);
+
+    int result = fileChooser.showOpenDialog(null);
+    if (result == JFileChooser.APPROVE_OPTION) {
+      File selectedFile = fileChooser.getSelectedFile();
+      try {
+        BufferedImage selectedImage = ImageIO.read(selectedFile);
+        if (selectedImage != null) {
+          int cropLength = Math.min(selectedImage.getWidth(), selectedImage.getHeight());
+          image = selectedImage.getSubimage(Math.max((selectedImage.getWidth() - cropLength) / 2, 0),
+                  Math.max((selectedImage.getHeight() - cropLength) / 2, 0),
+                  cropLength, cropLength);
+          recipe.setImage(image);
+          ImageIcon icon = new ImageIcon(image.getScaledInstance(300, 300, Image.SCALE_SMOOTH));
+          imageLabel.setIcon(icon);
+          imageLabel.setText("");
+
+        }
+        else {
+          JOptionPane.showMessageDialog(null, "Invalid image format");
+        }
+      } catch (IOException ex1) {
+        JOptionPane.showMessageDialog(null, "Error uploading image: " + ex1.getMessage());
+      }
+    }
+  }
+
+  private static void addIngredient(Recipe recipe, JTextField ingredientInput, JTextField sizeInput, DefaultListModel<String> ingredientsModel) {
+    String ingredient =ingredientInput.getText().trim();
+    String size =sizeInput.getText().trim();
+    Pattern p = Pattern.compile("\\d+");
+    Matcher m = p.matcher(size);
+
+    int numerator = 0;
+    int denominator = 1;
+    String units = "";
+
+    if (m.find()) {numerator = Integer.parseInt(m.group());}
+    if (m.find()) {denominator = Integer.parseInt(m.group());}
+
+    p = Pattern.compile("[a-zA-z]+");
+    m = p.matcher(size);
+    if (m.find()) {units = m.group();}
+
+    if (!ingredient.isEmpty() && !ingredient.equals("Ingredient") && !size.isEmpty() && numerator != 0) {
+      Fraction amount = new Fraction(numerator, denominator);
+      recipe.addIngredient(ingredient, new IngredientSize(amount, units));
+
+      ingredientsModel.addElement("- " + size + " " + ingredient);
+      ingredientInput.setText("");
+      sizeInput.setText("");
+    }
+    else {
+      JOptionPane.showMessageDialog(null, "Invalid ingredient");
+    }
   }
 
   // Method to open the "Look For Recipes" frame with a border layout

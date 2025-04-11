@@ -1,4 +1,5 @@
 import java.awt.*;
+import java.io.IOException;
 
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
@@ -6,7 +7,12 @@ import javax.swing.border.EmptyBorder;
 
 class RecipeTemplate {
     public static void main(String[] args) {
-        Recipe test = new Recipe();
+        Recipe test;
+        try {
+            test = new Recipe();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
 
         JFrame frame = new JFrame("Recipe");
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
