@@ -10,7 +10,6 @@ import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.io.BufferedWriter;
@@ -38,7 +37,13 @@ class RecipeBook {
     button1.addActionListener(e -> openRecipesFrame());
 
     button2.addActionListener(e -> {
-        recipeTemplate();
+      Recipe recipe;
+      try {
+        recipe = new Recipe();
+      } catch (IOException ex) {
+        throw new RuntimeException(ex);
+      }
+      recipeTemplate(recipe);
     });
 
     // Add buttons to panel
@@ -52,16 +57,8 @@ class RecipeBook {
     mainFrame.setVisible(true);
   }
 
-  private static void recipeTemplate() {
+  private static void recipeTemplate(Recipe recipe) {
     //Create new recipe
-    Recipe recipe;
-    try {
-      recipe = new Recipe();
-    } catch (IOException e) {
-      throw new RuntimeException(e);
-    }
-
-
     JFrame frame = new JFrame("Recipe");
     frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
     frame.setSize(500, 700);
