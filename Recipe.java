@@ -41,14 +41,16 @@ class Recipe {
         this.image = image;
     }
 
-    public String toString() {
-        StringBuilder output = new StringBuilder("Title: " + title + "\nImage Info: H = " + image.getHeight()
-                + " X W = " + image.getWidth() + "\nDescription" + description + "\nIngredients: ");
+    public String printIngredients() {
+        var output = new StringBuilder();
         for(String ingredient: ingredients.keySet()) {
             output.append("\n").append(ingredients.get(ingredient)).append(" ").append(ingredient);
         }
-        output.append("\nInstructions: ").append(instructions);
-
         return output.toString();
+    }
+
+    public String toString() {
+        return "Title: " + title + "\nDescription" + description + "\nIngredients: "
+                + printIngredients() + "\nInstructions: " + instructions;
     }
 }
