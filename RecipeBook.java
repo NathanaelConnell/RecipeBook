@@ -64,11 +64,14 @@ class RecipeBook {
     JPanel panel = new JPanel();
     panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
     panel.setBorder(new EmptyBorder(new Insets(20, 30, 30, 30))); // Adjusted padding
+    panel.setBackground(Color.PINK);
 
     // Editable Title
     JTextField title = new JTextField(recipe.getTitle());
     title.setFont(new Font("Times New Roman", Font.BOLD, 25));
     title.setMaximumSize(new Dimension(Integer.MAX_VALUE, 40));
+    title.setBackground(new Color(248, 245, 170));
+    title.setBorder(BorderFactory.createLineBorder(new Color(241, 9, 125)));
     title.addFocusListener(new FocusListener() {
       @Override
       public void focusGained(FocusEvent e) {
@@ -87,7 +90,7 @@ class RecipeBook {
     JLabel imageLabel = new JLabel();
     imageLabel.setIcon(new ImageIcon(recipe.getImage().getScaledInstance(300, 300, Image.SCALE_SMOOTH)));
     imageLabel.setPreferredSize(new Dimension(300, 300));
-    imageLabel.setBorder(BorderFactory.createLineBorder(Color.BLACK));
+    imageLabel.setBorder(BorderFactory.createLineBorder(Color.LIGHT_GRAY));
     JButton importImage = new JButton("Upload Image");
     importImage.addActionListener(e1 -> uploadImage(recipe, imageLabel));
 
@@ -95,7 +98,8 @@ class RecipeBook {
     JTextArea description = new JTextArea(recipe.getDescription());
     description.setLineWrap(true);
     description.setWrapStyleWord(true);
-    description.setBorder(BorderFactory.createLineBorder(Color.BLACK));
+    description.setBackground(new Color(248, 245, 170));
+    description.setBorder(BorderFactory.createLineBorder(new Color(241, 9, 125)));
     description.setPreferredSize(new Dimension(450, 200));
     description.addFocusListener(new FocusListener() {
       @Override
@@ -123,6 +127,8 @@ class RecipeBook {
     JTextField sizeInput = new JTextField();
     sizeInput.setPreferredSize(new Dimension(100, 30));
     JButton addIngredientButton = new JButton("Add Ingredient");
+    addIngredientButton.setBackground(new Color(241, 9, 125));
+    addIngredientButton.setForeground(new Color(248,245,170));
     ingredientInput.setText("Ingredient");
     sizeInput.setText("Quantity");
     ingredientInput.addFocusListener(new FocusListener() {
@@ -158,8 +164,9 @@ class RecipeBook {
     JTextArea instructions = new JTextArea(recipe.getInstructions());
     instructions.setLineWrap(true);
     instructions.setWrapStyleWord(true);
-    instructions.setBorder(BorderFactory.createLineBorder(Color.BLACK));
+    instructions.setBorder(BorderFactory.createLineBorder(new Color(241, 9, 125)));
     instructions.setPreferredSize(new Dimension(450, 200));
+    instructions.setBackground(new Color(248, 245, 170));
     instructions.addFocusListener(new FocusListener() {
       @Override
       public void focusGained(FocusEvent e) {
@@ -175,6 +182,8 @@ class RecipeBook {
     });
 
     JButton saveButton = new JButton("Save");
+    saveButton.setBackground(new Color(241, 9, 125));
+    saveButton.setForeground(new Color(248,245,170));
     saveButton.addActionListener(e ->
             save(recipe, title.getText(), description.getText(), instructions.getText(), frame));
 
