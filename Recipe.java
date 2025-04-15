@@ -18,6 +18,14 @@ class Recipe {
         image = ImageIO.read(new File("Default_Image.png"));
     }
 
+    public Recipe(Integer id, String title, String description, BufferedImage image, String instructions, HashMap<String, IngredientSize> ingredients) {
+        this.id = id;
+        this.title = title;
+        this.description = description;
+        this.image = image;
+        this.instructions = instructions;
+        this.ingredients.putAll(ingredients);
+    }
 
     public String getTitle() {return title;}
     
