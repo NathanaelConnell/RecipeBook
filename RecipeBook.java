@@ -242,7 +242,7 @@ class RecipeBook {
   }
 
   private static void addIngredient(Recipe recipe, JTextField ingredientInput, JTextField sizeInput, DefaultListModel<String> ingredientsModel) {
-    String ingredient = ingredientInput.getText().trim();
+    String ingredient = "";
     String size =sizeInput.getText().trim();
     Pattern p = Pattern.compile("\\d+");
     Matcher m = p.matcher(size);
@@ -259,8 +259,8 @@ class RecipeBook {
     if (m.find()) {units = m.group();}
 
     p = Pattern.compile("[a-zA-z' -]+");
-    m = p.matcher(ingredient);
-    if (m.find()) {ingredient = m.group();}
+    m = p.matcher(ingredientInput.getText().trim());
+    while (m.find()) {ingredient += m.group();}
 
     if (!ingredient.isEmpty() && !ingredient.equals("Ingredient") && !size.isEmpty() && numerator != 0) {
       Fraction amount = new Fraction(numerator, denominator);
