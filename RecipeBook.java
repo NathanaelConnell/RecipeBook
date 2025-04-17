@@ -64,7 +64,7 @@ class RecipeBook {
     JPanel panel = new JPanel();
     panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
     panel.setBorder(new EmptyBorder(new Insets(20, 30, 30, 30))); // Adjusted padding
-    panel.setBackground(Color.PINK);
+    panel.setBackground(new Color(145, 210, 212));
 
     // Editable Title
     JTextField title = new JTextField(recipe.getTitle());
@@ -99,7 +99,7 @@ class RecipeBook {
     description.setLineWrap(true);
     description.setWrapStyleWord(true);
     description.setBackground(new Color(248, 245, 170));
-    description.setBorder(BorderFactory.createLineBorder(new Color(241, 9, 125)));
+    description.setBorder(BorderFactory.createLineBorder(new Color(23, 103, 106)));
     description.setPreferredSize(new Dimension(450, 200));
     description.addFocusListener(new FocusListener() {
       @Override
@@ -127,8 +127,8 @@ class RecipeBook {
     JTextField sizeInput = new JTextField();
     sizeInput.setPreferredSize(new Dimension(100, 30));
     JButton addIngredientButton = new JButton("Add Ingredient");
-    addIngredientButton.setBackground(new Color(241, 9, 125));
-    addIngredientButton.setForeground(new Color(248,245,170));
+    addIngredientButton.setBackground(new Color(23, 103, 106));
+    addIngredientButton.setForeground(new Color(145,210,212));
     ingredientInput.setText("Ingredient");
     sizeInput.setText("Quantity");
     ingredientInput.addFocusListener(new FocusListener() {
@@ -164,7 +164,7 @@ class RecipeBook {
     JTextArea instructions = new JTextArea(recipe.getInstructions());
     instructions.setLineWrap(true);
     instructions.setWrapStyleWord(true);
-    instructions.setBorder(BorderFactory.createLineBorder(new Color(241, 9, 125)));
+    instructions.setBorder(BorderFactory.createLineBorder(new Color(23, 103, 106)));
     instructions.setPreferredSize(new Dimension(450, 200));
     instructions.setBackground(new Color(248, 245, 170));
     instructions.addFocusListener(new FocusListener() {
@@ -182,8 +182,8 @@ class RecipeBook {
     });
 
     JButton saveButton = new JButton("Save");
-    saveButton.setBackground(new Color(241, 9, 125));
-    saveButton.setForeground(new Color(248,245,170));
+    saveButton.setBackground(new Color(23, 103, 106));
+    saveButton.setForeground(new Color(145,210,212));
     saveButton.addActionListener(e ->
             save(recipe, title.getText(), description.getText(), instructions.getText(), frame));
 
