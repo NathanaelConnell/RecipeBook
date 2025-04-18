@@ -86,6 +86,17 @@ class RecipeBook {
       }
     });
 
+    //Drop Down Menu for type
+    String[] types = {"-- Select recipe type --", "Entree", "Appetizer", "Desert", "Drink", "Other"};
+    JComboBox<String> typeList = new JComboBox<>(types);
+    typeList.setSelectedIndex(0);
+
+    //Disable selecting the placeholder after opening
+    typeList.addActionListener(e -> {
+      if(typeList.getItemAt(0).equals("-- Select recipe type --")) {
+        typeList.removeItemAt(0);}
+    });
+
     //Editable Image
     JLabel imageLabel = new JLabel();
     imageLabel.setIcon(new ImageIcon(recipe.getImage().getScaledInstance(300, 300, Image.SCALE_SMOOTH)));
@@ -185,7 +196,7 @@ class RecipeBook {
     saveButton.setBackground(new Color(23, 103, 106));
     saveButton.setForeground(new Color(145,210,212));
     saveButton.addActionListener(e ->
-            save(recipe, title.getText(), description.getText(), instructions.getText(), frame));
+            save(recipe, title.getText(), (String) typeList.getSelectedItem(), description.getText(), instructions.getText(), frame));
 
     JPanel imageRow = new JPanel();
     imageRow.setLayout(new FlowLayout(FlowLayout.LEFT));
@@ -199,6 +210,7 @@ class RecipeBook {
     inputRow.add(addIngredientButton);
 
     panel.add(title);
+    panel.add(typeList);
     panel.add(imageRow);
     panel.add(description);
     panel.add(ingredientsPane);
@@ -242,7 +254,7 @@ class RecipeBook {
   }
 
   private static void addIngredient(Recipe recipe, JTextField ingredientInput, JTextField sizeInput, DefaultListModel<String> ingredientsModel) {
-    String ingredient = "";
+    StringBuilder ingredient = new StringBuilder();
     String size =sizeInput.getText().trim();
     Pattern p = Pattern.compile("\\d+");
     Matcher m = p.matcher(size);
@@ -260,26 +272,31 @@ class RecipeBook {
 
     p = Pattern.compile("[a-zA-z' -]+");
     m = p.matcher(ingredientInput.getText().trim());
-    while (m.find()) {ingredient += m.group();}
+    while (m.find()) {
+        ingredient.append(m.group());}
 
-    if (!ingredient.isEmpty() && !ingredient.equals("Ingredient") && !size.isEmpty() && numerator != 0) {
+    if ((!ingredient.isEmpty()) && !ingredient.toString().equals("Ingredient") && !size.isEmpty() && numerator != 0) {
       Fraction amount = new Fraction(numerator, denominator);
-      recipe.addIngredient(ingredient, new IngredientSize(amount, units));
+      recipe.addIngredient(ingredient.toString(), new IngredientSize(amount, units));
 
       ingredientsModel.addElement("- " + size + " " + ingredient);
-      ingredientInput.setText("");
-      sizeInput.setText("");
+      ingredientInput.setText("Ingredient");
+      sizeInput.setText("Quantity");
     }
     else {
       JOptionPane.showMessageDialog(null, "Invalid ingredient");
     }
   }
 
-  private static void save(Recipe recipe, String title, String description, String instructions, JFrame frame) {
+  private static void save(Recipe recipe, String title, String type, String description, String instructions, JFrame frame) {
     boolean invalidRecipe = false;
     String error = "Invalid recipe! Please update the following fields: ";
     if(title.equals("Title")) {
       error += "\nTitle";
+      invalidRecipe = true;
+    }
+    if(type.equals("-- Select recipe type --")) {
+      error += "\nType";
       invalidRecipe = true;
     }
     if(recipe.getIngredients().isEmpty()) {
@@ -295,6 +312,7 @@ class RecipeBook {
     }
     else {
       recipe.setTitle(title);
+      recipe.setType(type);
       recipe.setDescription(description);
       recipe.setInstructions(instructions);
       recipes.add(recipe);
@@ -325,7 +343,7 @@ class RecipeBook {
     // Left panel with filter buttons
     JPanel filterPanel = new JPanel();
     filterPanel.setLayout(new BoxLayout(filterPanel, BoxLayout.Y_AXIS));
-    String[] filters = { "All", "Entree", "Appetizer", "Desert", "Drinks" };
+    String[] filters = { "All", "Entree", "Appetizer", "Desert", "Drink", "Other"};
     for (String filter : filters) {
       JButton btn = new JButton(filter);
       btn.setAlignmentX(Component.CENTER_ALIGNMENT);

@@ -6,6 +6,7 @@ import java.awt.image.BufferedImage;
 
 class Recipe {
     private String title;
+    private String type;
     private String description;
     private BufferedImage image;
     private String instructions;
@@ -13,14 +14,16 @@ class Recipe {
 
     Recipe() throws IOException {
         title = "Title";
+        type = "Type";
         description = "Description (optional)";
         instructions = "Instructions";
         image = ImageIO.read(new File("Default_Image.png"));
     }
 
-    public Recipe(String title, String description, BufferedImage image, String instructions, HashMap<String, IngredientSize> ingredients) {
+    public Recipe(String title, String type, String description, BufferedImage image, String instructions, HashMap<String, IngredientSize> ingredients) {
         //this.id = id; need to add later for database
         this.title = title;
+        this.type = type;
         this.description = description;
         this.image = image;
         this.instructions = instructions;
@@ -28,8 +31,12 @@ class Recipe {
     }
 
     public String getTitle() {return title;}
-    
+
     public void setTitle(String title) {this.title = title;}
+
+    public String getType() {return type;}
+
+    public void setType(String type) {this.type = type;}
 
     public String getDescription() {return description;}
     
