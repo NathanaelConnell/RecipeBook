@@ -14,7 +14,7 @@ class Recipe {
 
     Recipe() throws IOException {
         title = "Title";
-        type = "Type";
+        type = "";
         description = "Description (optional)";
         instructions = "Instructions";
         image = ImageIO.read(new File("Default_Image.png"));
@@ -52,9 +52,9 @@ class Recipe {
 
     public void addIngredient(String ingredient, IngredientSize size) {ingredients.put(ingredient, size);}
 
-    public void setImage(BufferedImage image) {
-        this.image = image;
-    }
+    public void removeIngredient(String ingredient) {ingredients.remove(ingredient);}
+
+    public void setImage(BufferedImage image) {this.image = image;}
 
     public String printIngredients() {
         var output = new StringBuilder();

@@ -10,6 +10,7 @@ import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Objects;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.io.BufferedWriter;
@@ -89,12 +90,13 @@ class RecipeBook {
     //Drop Down Menu for type
     String[] types = {"-- Select recipe type --", "Entree", "Appetizer", "Desert", "Drink", "Other"};
     JComboBox<String> typeList = new JComboBox<>(types);
-    typeList.setSelectedIndex(0);
+    typeList.setSelectedItem(recipe.getType().isEmpty() ? types[0] : recipe.getType());
 
     //Disable selecting the placeholder after opening
     typeList.addActionListener(e -> {
-      if(typeList.getItemAt(0).equals("-- Select recipe type --")) {
+      if(typeList.getItemAt(0).equals(types[0])) {
         typeList.removeItemAt(0);}
+        recipe.setType(Objects.requireNonNull(typeList.getSelectedItem()).toString());
     });
 
     //Editable Image
@@ -131,6 +133,10 @@ class RecipeBook {
     JList<String> ingredientsList = new JList<>(ingredientsModel);
     JScrollPane ingredientsPane = new JScrollPane(ingredientsList);
     ingredientsPane.setPreferredSize(new Dimension(300, 150));
+    for(String ingredient : recipe.getIngredients().keySet()) {
+      IngredientSize size = recipe.getIngredients().get(ingredient);
+      ingredientsModel.addElement("- " + size + " " + ingredient);
+    }
 
     // Text field and button to add new ingredients
     JTextField ingredientInput = new JTextField();
@@ -171,6 +177,20 @@ class RecipeBook {
     addIngredientButton.addActionListener(event ->
             addIngredient(recipe, ingredientInput, sizeInput, ingredientsModel));
 
+    // Allow you to remove ingredients
+    JButton removeIngredientButton = new JButton("Remove");
+    removeIngredientButton.setBackground(new Color(23, 103, 106));
+    removeIngredientButton.setForeground(new Color(145,210,212));
+    removeIngredientButton.setVisible(false);
+    ingredientsList.addListSelectionListener( e ->
+            removeIngredientButton.setVisible(!ingredientsList.isSelectionEmpty()));
+
+    removeIngredientButton.addActionListener(e -> {
+      removeIngredient(recipe, ingredientsModel, ingredientsList);
+      removeIngredientButton.setVisible(false);
+    });
+
+
     // Editable Instructions
     JTextArea instructions = new JTextArea(recipe.getInstructions());
     instructions.setLineWrap(true);
@@ -208,6 +228,7 @@ class RecipeBook {
     inputRow.add(ingredientInput);
     inputRow.add(sizeInput);
     inputRow.add(addIngredientButton);
+    inputRow.add(removeIngredientButton);
 
     panel.add(title);
     panel.add(typeList);
@@ -215,6 +236,7 @@ class RecipeBook {
     panel.add(description);
     panel.add(ingredientsPane);
     panel.add(inputRow);
+    //panel.add(removeIngredientButton);
     panel.add(instructions);
     panel.add(saveButton);
 
@@ -288,6 +310,13 @@ class RecipeBook {
     }
   }
 
+  private static void removeIngredient(Recipe recipe, DefaultListModel<String> ingredientsModel, JList<String> ingredientsList) {
+    int selectedIndex = ingredientsList.getSelectedIndex();
+    String key = recipe.getIngredients().keySet().toArray(new String[0])[selectedIndex];
+    ingredientsModel.remove(selectedIndex);
+    recipe.removeIngredient(key);
+  }
+
   private static void save(Recipe recipe, String title, String type, String description, String instructions, JFrame frame) {
     boolean invalidRecipe = false;
     String error = "Invalid recipe! Please update the following fields: ";
@@ -295,7 +324,7 @@ class RecipeBook {
       error += "\nTitle";
       invalidRecipe = true;
     }
-    if(type.equals("-- Select recipe type --")) {
+    if(recipe.getType().isEmpty()) {
       error += "\nType";
       invalidRecipe = true;
     }
