@@ -13,8 +13,6 @@ import java.util.ArrayList;
 import java.util.Objects;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import java.io.BufferedWriter;
-import java.io.FileWriter;
 
 class RecipeBook {
   //Recipes
@@ -68,7 +66,8 @@ class RecipeBook {
     panel.setBackground(new Color(145, 210, 212));
 
     // Editable Title
-    JTextField title = new JTextField(recipe.getTitle());
+    String titlePlaceholder = "Title";
+    JTextField title = new JTextField(recipe.getTitle().isEmpty() ? titlePlaceholder : recipe.getTitle());
     title.setFont(new Font("Times New Roman", Font.BOLD, 25));
     title.setMaximumSize(new Dimension(Integer.MAX_VALUE, 40));
     title.setBackground(new Color(248, 245, 170));
@@ -76,14 +75,11 @@ class RecipeBook {
     title.addFocusListener(new FocusListener() {
       @Override
       public void focusGained(FocusEvent e) {
-        if(title.getText().equals("Title")) {
-          title.setText("");
-        }
+        if(title.getText().equals(titlePlaceholder)) {title.setText("");}
       }
       public void focusLost(FocusEvent e) {
-        if(title.getText().isEmpty()) {
-          title.setText("Title");
-        }
+        if (title.getText().isEmpty()) {title.setText(titlePlaceholder);}
+        else {recipe.setTitle(title.getText());}
       }
     });
 
@@ -108,7 +104,8 @@ class RecipeBook {
     importImage.addActionListener(e1 -> uploadImage(recipe, imageLabel));
 
     // Editable description
-    JTextArea description = new JTextArea(recipe.getDescription());
+    String descriptionPlaceholder = "Description (optional)";
+    JTextArea description = new JTextArea(recipe.getDescription().isEmpty() ? descriptionPlaceholder : recipe.getDescription());
     description.setLineWrap(true);
     description.setWrapStyleWord(true);
     description.setBackground(new Color(248, 245, 170));
@@ -117,14 +114,11 @@ class RecipeBook {
     description.addFocusListener(new FocusListener() {
       @Override
       public void focusGained(FocusEvent e) {
-        if(description.getText().equals("Description (optional)")) {
-          description.setText("");
-        }
+        if(description.getText().equals(descriptionPlaceholder)) {description.setText("");}
       }
       public void focusLost(FocusEvent e) {
-        if(description.getText().isEmpty()) {
-          description.setText("Description (optional)");
-        }
+        if(description.getText().isEmpty()) {description.setText(descriptionPlaceholder);}
+        else{recipe.setDescription(description.getText());}
       }
     });
 
@@ -192,7 +186,8 @@ class RecipeBook {
 
 
     // Editable Instructions
-    JTextArea instructions = new JTextArea(recipe.getInstructions());
+    String instructionsPlaceholder = "Instructions";
+    JTextArea instructions = new JTextArea(recipe.getInstructions().isEmpty() ? instructionsPlaceholder : recipe.getInstructions());
     instructions.setLineWrap(true);
     instructions.setWrapStyleWord(true);
     instructions.setBorder(BorderFactory.createLineBorder(new Color(23, 103, 106)));
@@ -201,22 +196,28 @@ class RecipeBook {
     instructions.addFocusListener(new FocusListener() {
       @Override
       public void focusGained(FocusEvent e) {
-        if(instructions.getText().equals("Instructions")) {
-          instructions.setText("");
-        }
+        if(instructions.getText().equals(instructionsPlaceholder)) {instructions.setText("");}
       }
       public void focusLost(FocusEvent e) {
-        if(instructions.getText().isEmpty()) {
-          instructions.setText("Instructions");
-        }
+        if(instructions.getText().isEmpty()) {instructions.setText(instructionsPlaceholder);}
+        else {recipe.setInstructions(instructions.getText());}
       }
     });
 
     JButton saveButton = new JButton("Save");
     saveButton.setBackground(new Color(23, 103, 106));
     saveButton.setForeground(new Color(145,210,212));
-    //added the look at recipe page, might need to be modified, can't run this big program on my computer -Ashlyn
-    saveButton.addActionListener(e ->{
+    saveButton.addActionListener(e -> {
+      try {
+        save(recipe);
+        frame.dispose();
+        viewRecipe(recipe);
+      } catch (IOException ex) {
+        JOptionPane.showMessageDialog(null, ex.getMessage());
+      }
+    });
+
+    /*Added the look at recipe page, might need to be modified, can't run this big program on my computer -Ashlyn
                         StringBuilder recipe = new StringBuilder();
                         recipe.append("Title: ").append(title.getText()).append("\n\n");
                         recipe.append("Description: ").append(describe.getText()).append("\n\n");
@@ -238,6 +239,8 @@ class RecipeBook {
                         outputFrame.add(new JScrollPane(outputArea));
                         outputFrame.setVisible(true);
                     });
+
+     */
            
     JPanel imageRow = new JPanel();
     imageRow.setLayout(new FlowLayout(FlowLayout.LEFT));
@@ -338,10 +341,10 @@ class RecipeBook {
     recipe.removeIngredient(key);
   }
 
-  private static void save(Recipe recipe, String title, String type, String description, String instructions, JFrame frame) {
+  private static void save(Recipe recipe) throws IOException {
     boolean invalidRecipe = false;
     String error = "Invalid recipe! Please update the following fields: ";
-    if(title.equals("Title")) {
+    if(recipe.getTitle().isEmpty()) {
       error += "\nTitle";
       invalidRecipe = true;
     }
@@ -353,29 +356,32 @@ class RecipeBook {
       error += "\nIngredients";
       invalidRecipe = true;
     }
-    if(instructions.equals("Instructions")) {
+    if(recipe.getInstructions().isEmpty()) {
       error += "\nInstructions";
       invalidRecipe = true;
     }
     if(invalidRecipe) {
-      JOptionPane.showMessageDialog(null, error);
+      throw new IOException(error);
     }
-    else {
-      recipe.setTitle(title);
-      recipe.setType(type);
-      recipe.setDescription(description);
-      recipe.setInstructions(instructions);
-      recipes.add(recipe);
+    recipes.add(recipe);
+  }
 
-      //Temporary test file to make sure data is saving
-      String fileName = "example.txt";
-      try (BufferedWriter writer = new BufferedWriter(new FileWriter(fileName))) {
-        writer.write(recipe.toString());
-      } catch (IOException ex) {
-        System.err.println(ex.getMessage());
-      }
-      frame.dispose();
-    }
+  private static void viewRecipe(Recipe recipe) {
+    // Create a new frame to display the saved recipe
+    JFrame outputFrame = new JFrame("Saved Recipe");
+    outputFrame.setSize(500, 600);
+    outputFrame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+
+    JTextArea outputArea = new JTextArea(recipe.toString());
+    outputArea.setEditable(false);
+    outputArea.setLineWrap(true);
+    outputArea.setWrapStyleWord(true);
+    outputArea.setFont(new Font("Serif", Font.PLAIN, 16));
+    outputArea.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
+    outputArea.setBackground(new Color(145, 210, 212));
+
+    outputFrame.add(new JScrollPane(outputArea));
+    outputFrame.setVisible(true);
   }
 
   // Method to open the "Look For Recipes" frame with a border layout

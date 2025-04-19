@@ -13,10 +13,10 @@ class Recipe {
     private final HashMap<String, IngredientSize> ingredients = new HashMap<>();
 
     Recipe() throws IOException {
-        title = "Title";
+        title = "";
         type = "";
-        description = "Description (optional)";
-        instructions = "Instructions";
+        description = "";
+        instructions = "";
         image = ImageIO.read(new File("Default_Image.png"));
     }
 
@@ -65,7 +65,7 @@ class Recipe {
     }
 
     public String toString() {
-        return "Title: " + title + "\nDescription" + description + "\nIngredients: "
-                + printIngredients() + "\nInstructions: " + instructions;
+        return "Title: " + title + "("+ type + ")\n\nDescription: \n" + description + "\n\nIngredients: "
+                + printIngredients() + "\n\nInstructions: \n" + instructions;
     }
 }
