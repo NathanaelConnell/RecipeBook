@@ -215,9 +215,30 @@ class RecipeBook {
     JButton saveButton = new JButton("Save");
     saveButton.setBackground(new Color(23, 103, 106));
     saveButton.setForeground(new Color(145,210,212));
-    saveButton.addActionListener(e ->
-            save(recipe, title.getText(), (String) typeList.getSelectedItem(), description.getText(), instructions.getText(), frame));
-
+    //added the look at recipe page, might need to be modified, can't run this big program on my computer -Ashlyn
+    saveButton.addActionListener(e ->{
+                        StringBuilder recipe = new StringBuilder();
+                        recipe.append("Title: ").append(title.getText()).append("\n\n");
+                        recipe.append("Description: ").append(describe.getText()).append("\n\n");
+                        recipe.append("Ingredients:\n").append(String)(typeList.getSelectedItem());
+                        recipe.append("\nInstructions:\n").append(instructions.getText());
+                    
+                        // Create a new frame to display the saved recipe
+                        JFrame outputFrame = new JFrame("Saved Recipe");
+                        outputFrame.setSize(500, 600);
+                        outputFrame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE); // Only closes this window
+                    
+                        JTextArea outputArea = new JTextArea(recipe.toString());
+                        outputArea.setEditable(false);
+                        outputArea.setLineWrap(true);
+                        outputArea.setWrapStyleWord(true);
+                        outputArea.setFont(new Font("Serif", Font.PLAIN, 16));
+                        outputArea.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
+                        outputArea.setBackground(new Color(145, 210, 212));
+                        outputFrame.add(new JScrollPane(outputArea));
+                        outputFrame.setVisible(true);
+                    });
+           
     JPanel imageRow = new JPanel();
     imageRow.setLayout(new FlowLayout(FlowLayout.LEFT));
     imageRow.add(importImage);
