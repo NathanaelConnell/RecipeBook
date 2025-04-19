@@ -214,7 +214,7 @@ class RecipeBook {
                         outputArea.setWrapStyleWord(true);
                         outputArea.setFont(new Font("Serif", Font.PLAIN, 16));
                         outputArea.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
-                    
+                        outputArea.setBackground(new Color(145, 210, 212));
                         outputFrame.add(new JScrollPane(outputArea));
                         outputFrame.setVisible(true);
                     });
