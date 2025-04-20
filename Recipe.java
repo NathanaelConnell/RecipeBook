@@ -3,6 +3,8 @@ import java.io.File;
 import java.io.IOException;
 import java.util.HashMap;
 import java.awt.image.BufferedImage;
+import java.awt.Color;
+import java.awt.Graphics;
 
 class Recipe {
     private String title;
@@ -12,12 +14,24 @@ class Recipe {
     private String instructions;
     private final HashMap<String, IngredientSize> ingredients = new HashMap<>();
 
-    Recipe() throws IOException {
-        title = "";
+    Recipe() {
+        title = "Title";
         type = "";
-        description = "";
-        instructions = "";
-        image = ImageIO.read(new File("Default_Image.png"));
+        description = "Description (optional)";
+        instructions = "Instructions";
+    
+        try {
+            image = ImageIO.read(new File("Default_Image.png"));
+        } catch (IOException e) {
+            System.err.println("Default image could not be loaded. Using blank image.");
+            image = new BufferedImage(100, 100, BufferedImage.TYPE_INT_ARGB); // Or whatever size you need
+            Graphics g = image.getGraphics();
+            g.setColor(Color.LIGHT_GRAY);
+            g.fillRect(0, 0, 100, 100);
+            g.setColor(Color.BLACK);
+            g.drawString("No Image", 10, 50); // Optional: label it
+            g.dispose();
+        }
     }
 
     public Recipe(String title, String type, String description, BufferedImage image, String instructions, HashMap<String, IngredientSize> ingredients) {
@@ -65,7 +79,7 @@ class Recipe {
     }
 
     public String toString() {
-        return "Title: " + title + "("+ type + ")\n\nDescription: \n" + description + "\n\nIngredients: "
-                + printIngredients() + "\n\nInstructions: \n" + instructions;
+        return "Title: " + title + "\nDescription" + description + "\nIngredients: "
+                + printIngredients() + "\nInstructions: " + instructions;
     }
 }
