@@ -3,7 +3,6 @@ import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import javax.swing.filechooser.FileNameExtensionFilter;
 import java.awt.*;
-import java.awt.FlowLayout;
 import java.awt.event.FocusEvent;
 import java.awt.event.FocusListener;
 import java.awt.image.BufferedImage;
@@ -13,6 +12,8 @@ import java.util.ArrayList;
 import java.util.Objects;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.io.BufferedWriter;
+import java.io.FileWriter;
 
 class RecipeBook {
   //Recipes
@@ -66,8 +67,7 @@ class RecipeBook {
     panel.setBackground(new Color(145, 210, 212));
 
     // Editable Title
-    String titlePlaceholder = "Title";
-    JTextField title = new JTextField(recipe.getTitle().isEmpty() ? titlePlaceholder : recipe.getTitle());
+    JTextField title = new JTextField(recipe.getTitle());
     title.setFont(new Font("Times New Roman", Font.BOLD, 25));
     title.setMaximumSize(new Dimension(Integer.MAX_VALUE, 40));
     title.setBackground(new Color(248, 245, 170));
@@ -75,11 +75,14 @@ class RecipeBook {
     title.addFocusListener(new FocusListener() {
       @Override
       public void focusGained(FocusEvent e) {
-        if(title.getText().equals(titlePlaceholder)) {title.setText("");}
+        if(title.getText().equals("Title")) {
+          title.setText("");
+        }
       }
       public void focusLost(FocusEvent e) {
-        if (title.getText().isEmpty()) {title.setText(titlePlaceholder);}
-        else {recipe.setTitle(title.getText());}
+        if(title.getText().isEmpty()) {
+          title.setText("Title");
+        }
       }
     });
 
@@ -103,9 +106,8 @@ class RecipeBook {
     JButton importImage = new JButton("Upload Image");
     importImage.addActionListener(e1 -> uploadImage(recipe, imageLabel));
 
-    //Editable description
-    String descriptionPlaceholder = "Description (optional)";
-    JTextArea description = new JTextArea(recipe.getDescription().isEmpty() ? descriptionPlaceholder : recipe.getDescription());
+    // Editable description
+    JTextArea description = new JTextArea(recipe.getDescription());
     description.setLineWrap(true);
     description.setWrapStyleWord(true);
     description.setBackground(new Color(248, 245, 170));
@@ -114,11 +116,14 @@ class RecipeBook {
     description.addFocusListener(new FocusListener() {
       @Override
       public void focusGained(FocusEvent e) {
-        if(description.getText().equals(descriptionPlaceholder)) {description.setText("");}
+        if(description.getText().equals("Description (optional)")) {
+          description.setText("");
+        }
       }
       public void focusLost(FocusEvent e) {
-        if(description.getText().isEmpty()) {description.setText(descriptionPlaceholder);}
-        else{recipe.setDescription(description.getText());}
+        if(description.getText().isEmpty()) {
+          description.setText("Description (optional)");
+        }
       }
     });
 
@@ -186,8 +191,7 @@ class RecipeBook {
 
 
     // Editable Instructions
-    String instructionsPlaceholder = "Instructions";
-    JTextArea instructions = new JTextArea(recipe.getInstructions().isEmpty() ? instructionsPlaceholder : recipe.getInstructions());
+    JTextArea instructions = new JTextArea(recipe.getInstructions());
     instructions.setLineWrap(true);
     instructions.setWrapStyleWord(true);
     instructions.setBorder(BorderFactory.createLineBorder(new Color(23, 103, 106)));
@@ -196,26 +200,43 @@ class RecipeBook {
     instructions.addFocusListener(new FocusListener() {
       @Override
       public void focusGained(FocusEvent e) {
-        if(instructions.getText().equals(instructionsPlaceholder)) {instructions.setText("");}
+        if(instructions.getText().equals("Instructions")) {
+          instructions.setText("");
+        }
       }
       public void focusLost(FocusEvent e) {
-        if(instructions.getText().isEmpty()) {instructions.setText(instructionsPlaceholder);}
-        else {recipe.setInstructions(instructions.getText());}
+        if(instructions.getText().isEmpty()) {
+          instructions.setText("Instructions");
+        }
       }
     });
 
     JButton saveButton = new JButton("Save");
     saveButton.setBackground(new Color(23, 103, 106));
     saveButton.setForeground(new Color(145,210,212));
-    saveButton.addActionListener(e -> {
-      try {
-        save(recipe);
-        frame.dispose();
-        viewRecipe(recipe);
-      } catch (IOException ex) {
-        JOptionPane.showMessageDialog(null, ex.getMessage());
-      }
-    });
+    //added the look at recipe page, might need to be modified, can't run this big program on my computer -Ashlyn
+    saveButton.addActionListener(e ->{
+                        StringBuilder recipeText = new StringBuilder();
+                        recipeText.append("Title: ").append(title.getText()).append("\n\n");
+                        recipeText.append("Description: ").append(description.getText()).append("\n\n");
+                        recipeText.append("Ingredients:\n").append((String) typeList.getSelectedItem());
+                        recipeText.append("\nInstructions:\n").append(instructions.getText());
+                    
+                        // Create a new frame to display the saved recipe
+                        JFrame outputFrame = new JFrame("Saved Recipe");
+                        outputFrame.setSize(500, 600);
+                        outputFrame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE); // Only closes this window
+                    
+                        JTextArea outputArea = new JTextArea(recipeText.toString());
+                        outputArea.setEditable(false);
+                        outputArea.setLineWrap(true);
+                        outputArea.setWrapStyleWord(true);
+                        outputArea.setFont(new Font("Serif", Font.PLAIN, 16));
+                        outputArea.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
+                        outputArea.setBackground(new Color(145, 210, 212));
+                        outputFrame.add(new JScrollPane(outputArea));
+                        outputFrame.setVisible(true);
+                    });
            
     JPanel imageRow = new JPanel();
     imageRow.setLayout(new FlowLayout(FlowLayout.LEFT));
@@ -316,10 +337,10 @@ class RecipeBook {
     recipe.removeIngredient(key);
   }
 
-  private static void save(Recipe recipe) throws IOException {
+  private static void save(Recipe recipe, String title, String type, String description, String instructions, JFrame frame) {
     boolean invalidRecipe = false;
     String error = "Invalid recipe! Please update the following fields: ";
-    if(recipe.getTitle().isEmpty()) {
+    if(title.equals("Title")) {
       error += "\nTitle";
       invalidRecipe = true;
     }
@@ -331,39 +352,29 @@ class RecipeBook {
       error += "\nIngredients";
       invalidRecipe = true;
     }
-    if(recipe.getInstructions().isEmpty()) {
+    if(instructions.equals("Instructions")) {
       error += "\nInstructions";
       invalidRecipe = true;
     }
     if(invalidRecipe) {
-      throw new IOException(error);
+      JOptionPane.showMessageDialog(null, error);
     }
-    recipes.add(recipe);
-  }
+    else {
+      recipe.setTitle(title);
+      recipe.setType(type);
+      recipe.setDescription(description);
+      recipe.setInstructions(instructions);
+      recipes.add(recipe);
 
-  private static void viewRecipe(Recipe recipe) {
-    /*Added the look at recipe page, might need to be modified, can't run this big program on my computer -Ashlyn
-    StringBuilder recipe = new StringBuilder();
-    recipe.append("Title: ").append(title.getText()).append("\n\n");
-    recipe.append("Description: ").append(describe.getText()).append("\n\n");
-    recipe.append("Ingredients:\n").append(String)(typeList.getSelectedItem());
-    recipe.append("\nInstructions:\n").append(instructions.getText());*/
-
-    // Create a new frame to display the saved recipe
-    JFrame outputFrame = new JFrame("Saved Recipe");
-    outputFrame.setSize(500, 600);
-    outputFrame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-
-    JTextArea outputArea = new JTextArea(recipe.toString());
-    outputArea.setEditable(false);
-    outputArea.setLineWrap(true);
-    outputArea.setWrapStyleWord(true);
-    outputArea.setFont(new Font("Serif", Font.PLAIN, 16));
-    outputArea.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
-    outputArea.setBackground(new Color(145, 210, 212));
-
-    outputFrame.add(new JScrollPane(outputArea));
-    outputFrame.setVisible(true);
+      //Temporary test file to make sure data is saving
+      String fileName = "example.txt";
+      try (BufferedWriter writer = new BufferedWriter(new FileWriter(fileName))) {
+        writer.write(recipe.toString());
+      } catch (IOException ex) {
+        System.err.println(ex.getMessage());
+      }
+      frame.dispose();
+    }
   }
 
   // Method to open the "Look For Recipes" frame with a border layout
@@ -372,6 +383,11 @@ class RecipeBook {
     recipesFrame.setSize(500, 400);
     recipesFrame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
     recipesFrame.setLayout(new BorderLayout());
+
+    // Panel for recipe titles
+    JPanel recipeListPanel = new JPanel();
+    recipeListPanel.setLayout(new BoxLayout(recipeListPanel, BoxLayout.Y_AXIS));
+    recipesFrame.add(new JScrollPane(recipeListPanel), BorderLayout.CENTER);
 
     // Top panel with title
     JLabel titleLabel = new JLabel("Look for Recipes", SwingConstants.CENTER);
@@ -385,7 +401,28 @@ class RecipeBook {
     for (String filter : filters) {
       JButton btn = new JButton(filter);
       btn.setAlignmentX(Component.CENTER_ALIGNMENT);
-      btn.addActionListener(e -> System.out.println("Filter selected: " + filter));
+      btn.addActionListener(e -> {
+        recipeListPanel.removeAll(); // Clear previous results
+
+        // Show test recipe
+        JButton recipeButton = new JButton("Test Title");
+        recipeButton.addActionListener(ev -> {
+          JFrame recipeFrame = new JFrame("Recipe Details");
+          recipeFrame.setSize(400, 300);
+          recipeFrame.setLocationRelativeTo(null);
+
+          JTextArea recipeDetails = new JTextArea();
+          recipeDetails.setEditable(false);
+          recipeDetails.setText("Title: Test Title\n\nIngredients: \n- 1 cup flour\n\nInstructions:\nMix and enjoy!");
+
+          recipeFrame.add(new JScrollPane(recipeDetails));
+          recipeFrame.setVisible(true);
+        });
+
+        recipeListPanel.add(recipeButton);
+        recipeListPanel.revalidate(); //Recalculates the layout of the panel
+        recipeListPanel.repaint(); //Updates the screen with any added details
+      });
       filterPanel.add(btn);
       filterPanel.add(Box.createRigidArea(new Dimension(0, 10))); // Spacing
     }
@@ -401,16 +438,6 @@ class RecipeBook {
     JPanel buttonPanel = new JPanel();
     buttonPanel.add(exportButton);
     recipesFrame.add(buttonPanel, BorderLayout.SOUTH); // Add button at the bottom
-
-    // Main panel in the center for displaying recipe titles
-    JPanel mainPanel = new JPanel(new BorderLayout());
-    mainPanel.setBorder(BorderFactory.createCompoundBorder(
-        BorderFactory.createLineBorder(Color.DARK_GRAY, 2),
-        BorderFactory.createEmptyBorder(10, 10, 10, 10)));
-
-    JLabel placeholder = new JLabel("Recipe Titles Will Appear Here", SwingConstants.CENTER);
-    mainPanel.add(placeholder, BorderLayout.CENTER);
-    recipesFrame.add(mainPanel, BorderLayout.CENTER);
 
     recipesFrame.setVisible(true);
   }
