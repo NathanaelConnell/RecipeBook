@@ -1,7 +1,0 @@
-Title: Example Recipe
-Description: This is the example for the recipe template!
-Ingredients: 
-1  Apple
-3/4 Cups Butter
-16 oz Steak
-Instructions: Just enter the values in the fields and hit save!
