@@ -1,10 +1,9 @@
-import javax.imageio.ImageIO;
-import java.io.File;
-import java.io.IOException;
 import java.util.HashMap;
 import java.awt.image.BufferedImage;
 import java.awt.Color;
-import java.awt.Graphics;
+import java.awt.Graphics2D;
+import java.awt.Font;
+import java.awt.FontMetrics;
 
 class Recipe {
     private String title;
@@ -15,23 +14,11 @@ class Recipe {
     private final HashMap<String, IngredientSize> ingredients = new HashMap<>();
 
     Recipe() {
-        title = "Title";
+        title = "";
         type = "";
-        description = "Description (optional)";
-        instructions = "Instructions";
-    
-        try {
-            image = ImageIO.read(new File("Default_Image.png"));
-        } catch (IOException e) {
-            System.err.println("Default image could not be loaded. Using blank image.");
-            image = new BufferedImage(100, 100, BufferedImage.TYPE_INT_ARGB); // Or whatever size you need
-            Graphics g = image.getGraphics();
-            g.setColor(Color.LIGHT_GRAY);
-            g.fillRect(0, 0, 100, 100);
-            g.setColor(Color.BLACK);
-            g.drawString("No Image", 10, 50); // Optional: label it
-            g.dispose();
-        }
+        description = "";
+        instructions = "";
+        setDefaultImage();
     }
 
     public Recipe(String title, String type, String description, BufferedImage image, String instructions, HashMap<String, IngredientSize> ingredients) {
@@ -79,7 +66,26 @@ class Recipe {
     }
 
     public String toString() {
-        return "Title: " + title + "\nDescription" + description + "\nIngredients: "
-                + printIngredients() + "\nInstructions: " + instructions;
+        return "Title: " + title + " ("+ type + ")\n\nDescription: \n" + description + "\n\nIngredients: "
+                + printIngredients() + "\n\nInstructions: \n" + instructions;
+    }
+
+    private void setDefaultImage() {
+        image = new BufferedImage(300, 300, BufferedImage.TYPE_INT_ARGB);
+        Graphics2D g = image.createGraphics(); // Use Graphics2D for better control
+
+        g.setColor(Color.LIGHT_GRAY);
+        g.fillRect(0, 0, 300, 300);
+
+        g.setColor(Color.BLACK);
+        Font font = g.getFont(); // Use the default font or set your own with g.setFont(...)
+        FontMetrics metrics = g.getFontMetrics(font);
+
+        String text = "No Image Provided";
+        int x = (300 - metrics.stringWidth(text)) / 2;
+        int y = (300 - metrics.getHeight()) / 2 + metrics.getAscent();
+
+        g.drawString(text, x, y);
+        g.dispose();
     }
 }

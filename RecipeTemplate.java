@@ -8,11 +8,8 @@ import javax.swing.border.EmptyBorder;
 class RecipeTemplate {
     public static void main(String[] args) {
         Recipe test;
-        try {
-            test = new Recipe();
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
+        test = new Recipe();
+
 
         JFrame frame = new JFrame("Recipe");
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
