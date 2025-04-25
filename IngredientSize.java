@@ -9,9 +9,9 @@ class IngredientSize {
 
     public Fraction getAmount() {return amount;}
 
-    public String getUnit() {return unit;}
-
     public void setAmount(Fraction amount) {this.amount = amount;}
+
+    public String getUnit() {return unit;}
 
     public void setUnit(String unit) {this.unit = unit;}
 

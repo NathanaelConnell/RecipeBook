@@ -16,12 +16,12 @@ public class Fraction {
 
     public int getNumerator() {return numerator;}
 
-    public int getDenominator() {return denominator;}
-
     public void setNumerator(int numerator) {
         this.numerator = numerator;
         if(denominator > 1) {reduce();}
     }
+
+    public int getDenominator() {return denominator;}
 
     public void setDenominator(int denominator) {
         this.denominator = denominator;

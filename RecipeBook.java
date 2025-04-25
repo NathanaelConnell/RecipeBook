@@ -15,7 +15,7 @@ import java.util.regex.Pattern;
 
 class RecipeBook {
   //Recipes
-  static ArrayList<Recipe> recipes = new ArrayList<>();
+  private static final ArrayList<Recipe> recipes = new ArrayList<>();
 
   public static void main(String[] args) {
     // Main frame

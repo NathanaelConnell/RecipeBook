@@ -22,7 +22,6 @@ class Recipe {
     }
 
     public Recipe(String title, String type, String description, BufferedImage image, String instructions, HashMap<String, IngredientSize> ingredients) {
-        //this.id = id; need to add later for database
         this.title = title;
         this.type = type;
         this.description = description;
@@ -45,6 +44,8 @@ class Recipe {
 
     public BufferedImage getImage() {return image;}
 
+    public void setImage(BufferedImage image) {this.image = image;}
+
     public String getInstructions() {return instructions;}
     
     public void setInstructions(String instructions) {this.instructions = instructions;}
@@ -54,8 +55,6 @@ class Recipe {
     public void addIngredient(String ingredient, IngredientSize size) {ingredients.put(ingredient, size);}
 
     public void removeIngredient(String ingredient) {ingredients.remove(ingredient);}
-
-    public void setImage(BufferedImage image) {this.image = image;}
 
     public String printIngredients() {
         var output = new StringBuilder();
