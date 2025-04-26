@@ -372,8 +372,9 @@ class RecipeBook {
     JPanel filterPanel = new JPanel();
     filterPanel.setLayout(new BoxLayout(filterPanel, BoxLayout.Y_AXIS));
     String[] filters = { "All", "Entree", "Appetizer", "Desert", "Drink", "Other"};
+    filterRecipe(filters[0], recipeListPanel);
     for (String filter : filters) {
-      JButton btn = getJButton(filter, recipeListPanel);
+      JButton btn = getFilterBtn(filter, recipeListPanel);
       filterPanel.add(btn);
       filterPanel.add(Box.createRigidArea(new Dimension(0, 10))); // Spacing
     }
@@ -393,32 +394,27 @@ class RecipeBook {
     recipesFrame.setVisible(true);
   }
 
-  private static JButton getJButton(String filter, JPanel recipeListPanel) {
+  private static JButton getFilterBtn(String filter, JPanel recipeListPanel) {
     JButton btn = new JButton(filter);
     btn.setAlignmentX(Component.CENTER_ALIGNMENT);
-    btn.addActionListener(e -> {
-      recipeListPanel.removeAll(); // Clear previous results
-
-      // Show test recipe
-      JButton recipeButton = new JButton("Test Title");
-      recipeButton.addActionListener(ev -> {
-        JFrame recipeFrame = new JFrame("Recipe Details");
-        recipeFrame.setSize(400, 300);
-        recipeFrame.setLocationRelativeTo(null);
-
-        JTextArea recipeDetails = new JTextArea();
-        recipeDetails.setEditable(false);
-        recipeDetails.setText("Title: Test Title\n\nIngredients: \n- 1 cup flour\n\nInstructions:\nMix and enjoy!");
-
-        recipeFrame.add(new JScrollPane(recipeDetails));
-        recipeFrame.setVisible(true);
-      });
-
-      recipeListPanel.add(recipeButton);
-      recipeListPanel.revalidate(); //Recalculates the layout of the panel
-      recipeListPanel.repaint(); //Updates the screen with any added details
-    });
+    btn.addActionListener(e -> filterRecipe(filter, recipeListPanel));
     return btn;
+  }
+
+  private static void filterRecipe(String filter, JPanel recipeListPanel) {
+    recipeListPanel.removeAll();
+    for(Recipe recipe : recipes) {
+      if(filter.equals("All") || filter.equals(recipe.getType())) {
+        JButton recipeButton = new JButton(recipe.getTitle());
+        recipeButton.setHorizontalAlignment(SwingConstants.LEFT);
+        recipeButton.setMaximumSize(new Dimension(Integer.MAX_VALUE, recipeButton.getPreferredSize().height));
+
+        recipeButton.addActionListener(ev -> viewRecipe(recipe));
+        recipeListPanel.add(recipeButton);
+      }
+    }
+    recipeListPanel.revalidate(); //Recalculates the layout of the panel
+    recipeListPanel.repaint();  //Updates details
   }
 
   // Original frame for "Create Recipe" button remains unchanged
