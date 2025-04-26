@@ -12,6 +12,8 @@ import java.util.ArrayList;
 import java.util.Objects;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.io.BufferedWriter;
+import java.io.FileWriter;
 
 class RecipeBook {
   //Recipes
@@ -50,6 +52,7 @@ class RecipeBook {
     mainFrame.setVisible(true);
   }
 
+  // Create/Edit Recipe
   private static void recipeTemplate(Recipe recipe) {
     JFrame frame = new JFrame("Recipe");
     frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
@@ -236,6 +239,7 @@ class RecipeBook {
     frame.setVisible(true);
   }
 
+  // Upload a recipe image
   private static void uploadImage(Recipe recipe, JLabel imageLabel) {
     BufferedImage image;
     JFileChooser fileChooser = new JFileChooser();
@@ -266,6 +270,7 @@ class RecipeBook {
     }
   }
 
+  // Add an ingredient to a recipe
   private static void addIngredient(Recipe recipe, JTextField ingredientInput, JTextField sizeInput, DefaultListModel<String> ingredientsModel) {
     StringBuilder ingredient = new StringBuilder();
     String size =sizeInput.getText().trim();
@@ -301,6 +306,7 @@ class RecipeBook {
     }
   }
 
+  // Remove an ingredient from a recipe
   private static void removeIngredient(Recipe recipe, DefaultListModel<String> ingredientsModel, JList<String> ingredientsList) {
     int selectedIndex = ingredientsList.getSelectedIndex();
     String key = recipe.getIngredients().keySet().toArray(new String[0])[selectedIndex];
@@ -308,6 +314,7 @@ class RecipeBook {
     recipe.removeIngredient(key);
   }
 
+  // Save Recipe
   private static void save(Recipe recipe) throws IOException {
     boolean invalidRecipe = false;
     String error = "Invalid recipe! Please update the following fields: ";
@@ -333,11 +340,14 @@ class RecipeBook {
     recipes.add(recipe);
   }
 
+  // Look at a recipe
   private static void viewRecipe(Recipe recipe) {
     // Create a new frame to display the saved recipe
     JFrame outputFrame = new JFrame("Saved Recipe");
-    outputFrame.setSize(500, 600);
+    outputFrame.setSize(900, 400);
     outputFrame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+    JPanel outputPanel = new JPanel();
+    outputPanel.setLayout(new BoxLayout(outputPanel, BoxLayout.LINE_AXIS));
 
     JTextArea outputArea = new JTextArea(recipe.toString());
     outputArea.setEditable(false);
@@ -347,8 +357,61 @@ class RecipeBook {
     outputArea.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
     outputArea.setBackground(new Color(145, 210, 212));
 
-    outputFrame.add(new JScrollPane(outputArea));
+    JLabel imageLabel = new JLabel();
+    imageLabel.setIcon(new ImageIcon(recipe.getImage().getScaledInstance(300, 300, Image.SCALE_SMOOTH)));
+    imageLabel.setPreferredSize(new Dimension(300, 300));
+    imageLabel.setBorder(BorderFactory.createLineBorder(Color.LIGHT_GRAY));
+
+    JScrollPane scrollPane = new JScrollPane(outputArea);
+    scrollPane.setPreferredSize(new Dimension(600, 300));
+
+    // Export Grocery List Button
+    JButton exportButton = new JButton("Export Grocery List");
+    exportButton.addActionListener(e -> ExportGroceryList(recipe));
+
+    //Edit Recipe Button
+    JButton editButton = new JButton("Edit Recipe");
+    editButton.addActionListener(e -> {
+      recipeTemplate(recipe);
+      outputFrame.dispose();
+    });
+
+    JButton deleteButton = new JButton("Delete Recipe");
+    deleteButton.addActionListener(e -> {
+      deleteRecipe(recipe);
+      outputFrame.dispose();
+    });
+
+    outputPanel.add(scrollPane);
+    outputPanel.add(imageLabel);
+
+    // Panel for buttons (added to bottom)
+    JPanel buttonPanel = new JPanel();
+    buttonPanel.setLayout(new FlowLayout(FlowLayout.CENTER));
+    buttonPanel.setPreferredSize(new Dimension(900, 100));
+    buttonPanel.add(exportButton);
+    buttonPanel.add(editButton);
+    buttonPanel.add(deleteButton);
+
+    outputFrame.add(buttonPanel, BorderLayout.SOUTH);
+    outputFrame.add(outputPanel);
     outputFrame.setVisible(true);
+  }
+
+  // Delete Recipe
+  private static void deleteRecipe(Recipe recipe) {
+    int result = JOptionPane.showConfirmDialog(null, "Are you sure you want to delete this recipe?", "Delete Recipe",JOptionPane.YES_NO_OPTION);
+    if(result == JOptionPane.YES_OPTION) {
+      File folder = new File("Grocery Lists");
+      if(folder.exists()) {
+        File groceryList = new File(folder, recipe.getTitle() + ".txt");
+        if(groceryList.exists() && !groceryList.delete()) {
+          JOptionPane.showMessageDialog(null, "Failed to delete grocery list file located at: \n" + groceryList.getAbsolutePath());
+        }
+      }
+      recipes.remove(recipe);
+      JOptionPane.showMessageDialog(null, "Recipe deleted successfully!");
+    }
   }
 
   // Method to open the "Look For Recipes" frame with a border layout
@@ -378,22 +441,12 @@ class RecipeBook {
       filterPanel.add(btn);
       filterPanel.add(Box.createRigidArea(new Dimension(0, 10))); // Spacing
     }
+
     recipesFrame.add(filterPanel, BorderLayout.WEST);
-
-    // Export Grocery List Button
-    JButton exportButton = new JButton("Export Grocery List");
-    exportButton.addActionListener(e -> {
-      ExportGroceryListFrame(); // Call the new method
-    });
-
-    // Panel for buttons (added to bottom)
-    JPanel buttonPanel = new JPanel();
-    buttonPanel.add(exportButton);
-    recipesFrame.add(buttonPanel, BorderLayout.SOUTH); // Add button at the bottom
-
     recipesFrame.setVisible(true);
   }
 
+  // Generate buttons for filters
   private static JButton getFilterBtn(String filter, JPanel recipeListPanel) {
     JButton btn = new JButton(filter);
     btn.setAlignmentX(Component.CENTER_ALIGNMENT);
@@ -401,6 +454,7 @@ class RecipeBook {
     return btn;
   }
 
+  // Filter the recipes
   private static void filterRecipe(String filter, JPanel recipeListPanel) {
     recipeListPanel.removeAll();
     for(Recipe recipe : recipes) {
@@ -417,23 +471,27 @@ class RecipeBook {
     recipeListPanel.repaint();  //Updates details
   }
 
-  // Original frame for "Create Recipe" button remains unchanged
-  private static void openFrame(String title, Color bgColor) {
-    JFrame frame = new JFrame(title);
-    frame.setSize(300, 200);
-    frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-    frame.getContentPane().setBackground(bgColor);
-    frame.setVisible(true);
-  }
+  // Export Grocery List to txt file
+  private static void ExportGroceryList(Recipe recipe) {
+    File folder = new File("Grocery Lists");
+    if (!folder.exists()) {
+      if (!folder.mkdir()) {
+        JOptionPane.showMessageDialog(null, "Grocery list could not be created");
+      }
+    }
+    else {
+      try{
+        File groceryList = new File(folder, recipe.getTitle() + ".txt");
+        FileWriter fileWriter = new FileWriter(groceryList);
+        BufferedWriter bufferedWriter = new BufferedWriter(fileWriter);
+        bufferedWriter.write(recipe.getTitle() + " Grocery List: \n" + recipe.printIngredients());
+        bufferedWriter.close();
 
-  // Frame for ExportGroceryList
-  private static void ExportGroceryListFrame() {
-    DefaultListModel<String> ingredients = new DefaultListModel<>();
-    ingredients.addElement("Milk");
-    ingredients.addElement("Eggs");
-    ingredients.addElement("Bread");
-    ingredients.addElement("Cheese");
-
-    //new ExportGroceryList(ingredients); // Open the ExportGroceryList frame
+        JOptionPane.showMessageDialog(null, "The grocery list was successfully exported to: \n" + groceryList.getAbsolutePath());
+      }
+      catch (IOException e) {
+        JOptionPane.showMessageDialog(null, "Grocery list could not be created");
+      }
+    }
   }
 }

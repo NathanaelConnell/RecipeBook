@@ -10,24 +10,6 @@ public class Fraction {
         }
     }
 
-    public Fraction(int numerator) {
-        this.numerator = numerator;
-    }
-
-    public int getNumerator() {return numerator;}
-
-    public void setNumerator(int numerator) {
-        this.numerator = numerator;
-        if(denominator > 1) {reduce();}
-    }
-
-    public int getDenominator() {return denominator;}
-
-    public void setDenominator(int denominator) {
-        this.denominator = denominator;
-        if(denominator > 1) {reduce();}
-    }
-
     private int gcd(int a, int b) {
         int tmp;
         while (b != 0) {
