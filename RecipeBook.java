@@ -338,6 +338,10 @@ class RecipeBook {
       throw new IOException(error);
     }
     recipes.add(recipe);
+    ////////////////////////////////////////////////////
+    //CHANGES HERE//
+    ///////////////////////////////////////////////////
+    connect(recipe.getTitle(), recipe.getImage(), recipe.getDescription(), recipe.getInstructions(), recipe.getIngredients());
   }
 
   // Look at a recipe
