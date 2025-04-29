@@ -341,7 +341,7 @@ class RecipeBook {
     ////////////////////////////////////////////////////
     //CHANGES HERE//
     ///////////////////////////////////////////////////
-    connect(recipe.getTitle(), recipe.getImage(), recipe.getDescription(), recipe.getInstructions(), recipe.getIngredients());
+    RecipeRepo.connect(recipe.getTitle(), recipe.getImage(), recipe.getDescription(), recipe.getInstructions(), recipe.getIngredients());
   }
 
   // Look at a recipe
