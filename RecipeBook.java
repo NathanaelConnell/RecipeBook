@@ -81,7 +81,7 @@ class RecipeBook {
     });
 
     //Drop Down Menu for type
-    String[] types = {"-- Select recipe type --", "Entree", "Appetizer", "Desert", "Drink", "Other"};
+    String[] types = {"-- Select recipe type --", "Entree", "Appetizer", "Dessert", "Drink", "Other"};
     JComboBox<String> typeList = new JComboBox<>(types);
     typeList.setSelectedItem(recipe.getType().isEmpty() ? types[0] : recipe.getType());
 
@@ -243,7 +243,7 @@ class RecipeBook {
   private static void uploadImage(Recipe recipe, JLabel imageLabel) {
     BufferedImage image;
     JFileChooser fileChooser = new JFileChooser();
-    FileNameExtensionFilter filter = new FileNameExtensionFilter("Image Files (JPG, PNG, GIF)", "jpg", "jpeg", "png", "gif");
+    FileNameExtensionFilter filter = new FileNameExtensionFilter("PNG files", "png");
     fileChooser.setFileFilter(filter);
 
     int result = fileChooser.showOpenDialog(null);
@@ -293,7 +293,7 @@ class RecipeBook {
     while (m.find()) {
         ingredient.append(m.group());}
 
-    if ((!ingredient.isEmpty()) && !ingredient.toString().equals("Ingredient") && !size.isEmpty() && numerator != 0) {
+    if ((!ingredient.toString().isEmpty()) && !ingredient.toString().equals("Ingredient") && !size.isEmpty() && numerator != 0) {
       Fraction amount = new Fraction(numerator, denominator);
       recipe.addIngredient(ingredient.toString(), new IngredientSize(amount, units));
 
@@ -438,7 +438,7 @@ class RecipeBook {
     // Left panel with filter buttons
     JPanel filterPanel = new JPanel();
     filterPanel.setLayout(new BoxLayout(filterPanel, BoxLayout.Y_AXIS));
-    String[] filters = { "All", "Entree", "Appetizer", "Desert", "Drink", "Other"};
+    String[] filters = { "All", "Entree", "Appetizer", "Dessert", "Drink", "Other"};
     filterRecipe(filters[0], recipeListPanel);
     for (String filter : filters) {
       JButton btn = getFilterBtn(filter, recipeListPanel);
