@@ -31,4 +31,16 @@ public class Fraction {
         frac += (denominator <=1 ? numerator: numerator + "/" + denominator);
         return frac;
     }
+
+    public static Fraction fromString(String string) {
+        if(!string.equals("/")) {
+            return new Fraction(Integer.parseInt(string), 1);
+        }
+
+        String[] fractionElements = string.split("/");
+        int num = Integer.parseInt(fractionElements[0]);
+        int den = Integer.parseInt(fractionElements[1]);
+
+        return new Fraction(num, den);
+    }
 }
