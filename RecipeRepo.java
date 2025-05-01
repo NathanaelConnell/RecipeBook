@@ -11,7 +11,7 @@ import java.util.Map;
 
 class RecipeRepo {
 
-    private static final String DB_URL = "jdbc:sqlite:yourrecipes.db";
+    private static final String DB_URL = "jdbc:sqlite:myrecipes.db";
 
 
     //Make sure you can connect into database
