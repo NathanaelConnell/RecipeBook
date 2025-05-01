@@ -1,29 +1,42 @@
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
+import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.sql.*;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
 class RecipeRepo {
 
-    private static final String DB_URL = "jdbc:sqlite:recipes.db";
+    private static final String DB_URL = "jdbc:sqlite:yourrecipes.db";
+
 
     //Make sure you can connect into database
-    public static void connect(String recipeTitle, BufferedImage recipeImage, String recipeDescription, String recipeInstructions,
+    public static void connect(Boolean isSave, String recipeType, String recipeTitle, BufferedImage recipeImage, String recipeDescription, String recipeInstructions,
                                HashMap<String, IngredientSize> ingredients) {
         try( Connection conn = DriverManager.getConnection(DB_URL)) {
 
             createTableIfNotExists(conn);
-            save(conn, recipeTitle, recipeImage, recipeDescription, recipeInstructions, ingredients);
-            load(conn);
+            if(isSave) {
+                save(conn, recipeTitle, recipeType, recipeImage, recipeDescription, recipeInstructions, ingredients);
+            }
+            else {
+                load(conn);
+            }
 
         } catch (SQLException e) {
             System.err.println(e.getMessage());
         }
 
+    }
+
+    public static void enableWALMode(Connection conn) throws SQLException {
+        try (Statement stmt = conn.createStatement()) {
+            stmt.execute("PRAGMA journal_mode=WAL");
+        }
     }
 
     //Create the database table if the table is not yet created
@@ -33,6 +46,7 @@ class RecipeRepo {
         String sql = """
                 CREATE TABLE IF NOT EXISTS recipes (
                     recipe_id INTEGER PRIMARY KEY AUTOINCREMENT,
+                    recipe_type TEXT NOT NULL,
                     recipe_name TEXT NOT NULL,
                     recipe_image BLOB,
                     recipe_description TEXT NOT NULL,
@@ -56,18 +70,18 @@ class RecipeRepo {
 
 
     //Save recipe data to database
-    private static void save(Connection conn, String recipeName, BufferedImage recipeImage, String description, String instructions,
+    private static void save(Connection conn, String recipeName, String recipeType, BufferedImage recipeImage, String description, String instructions,
                              HashMap<String, IngredientSize> ingredients) throws SQLException {
-        String sqlRecipe = "INSERT INTO recipes (recipe_name, recipe_image, recipe_description, recipe_instructions) VALUES (?, ?, ?, ?)";
+        String sqlRecipe = "INSERT INTO recipes (recipe_name, recipe_type, recipe_image, recipe_description, recipe_instructions) VALUES (?, ?, ?, ?, ?)";
         try (PreparedStatement recipeStatement = conn.prepareStatement(sqlRecipe, Statement.RETURN_GENERATED_KEYS)) {
             recipeStatement.setString(1, recipeName);
-
+            recipeStatement.setString(2, recipeType);
             ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
             ImageIO.write(recipeImage, "png", outputStream);
             byte[] imageBytes = outputStream.toByteArray();
-            recipeStatement.setBytes(2, imageBytes);
-            recipeStatement.setString(3, description);
-            recipeStatement.setString(4, instructions);
+            recipeStatement.setBytes(3, imageBytes);
+            recipeStatement.setString(4, description);
+            recipeStatement.setString(5, instructions);
 
 
             recipeStatement.executeUpdate();
@@ -95,13 +109,49 @@ class RecipeRepo {
     }
 
     //Load recipe data to database
-    private static void load(Connection conn) throws SQLException {
+    private static ArrayList<Recipe> load(Connection conn) throws SQLException {
+        ArrayList<Recipe> recipeList = new ArrayList<>();
+
         String sql = "SELECT * FROM recipes";
         try (Statement stmt = conn.createStatement()) {
             ResultSet rs = stmt.executeQuery(sql);
             while (rs.next()) {
-                System.out.println("Recipe: " + rs.getString("recipe_name"));
+                int recipeId = rs.getInt("recipe_id");
+                String type = rs.getString("recipe_type");
+                String title = rs.getString("recipe_name");
+                byte[] image = rs.getBytes("recipe_image");
+                String description = rs.getString("recipe_description");
+                String instructions = rs.getString("recipe_instructions");
+
+                BufferedImage recipeImage = null;
+                if (image != null) {
+                    try {
+                        recipeImage = ImageIO.read(new ByteArrayInputStream(image));
+                    } catch (IOException e) {
+                        System.err.println(e.getMessage());
+                    }
+                }
+
+                HashMap<String, IngredientSize> ingredients = new HashMap<>();
+                String sqlIngredient = "SELECT * FROM ingredients WHERE recipe_id = ?";
+                try (PreparedStatement ingredientStatement = conn.prepareStatement(sqlIngredient)) {
+                    ingredientStatement.setInt(1, recipeId);
+                    try (ResultSet rs2 = ingredientStatement.executeQuery()) {
+                        while (rs2.next()) {
+                            String ingredientName = rs2.getString("ingredient_name");
+                            String ingredientAmount = rs2.getString("ingredient_amount");
+                            IngredientSize ingredientSize = IngredientSize.fromString(ingredientAmount);
+                            ingredients.put(ingredientName, ingredientSize);
+                        }
+                    }
+                }
+
+                Recipe recipe = new Recipe(title, type, description, recipeImage, instructions, ingredients);
+                recipe.setId(recipeId);
+
+                recipeList.add(recipe);
             }
         }
+        return recipeList;
     }
 }
