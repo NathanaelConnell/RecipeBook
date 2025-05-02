@@ -17,7 +17,8 @@ import java.io.FileWriter;
 
 class RecipeBook {
   //Recipes
-  private static final ArrayList<Recipe> recipes = new ArrayList<>();
+  private static final ArrayList<Recipe> recipes = RecipeRepo.connect(false, null, null,
+          null, null, null, null);
 
   public static void main(String[] args) {
     // Main frame
