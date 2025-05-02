@@ -15,21 +15,23 @@ class RecipeRepo {
 
 
     //Make sure you can connect into database
-    public static void connect(Boolean isSave, String recipeType, String recipeTitle, BufferedImage recipeImage, String recipeDescription, String recipeInstructions,
+    public static ArrayList<Recipe> connect(Boolean isSave, String recipeTitle, String recipeType, BufferedImage recipeImage, String recipeDescription, String recipeInstructions,
                                HashMap<String, IngredientSize> ingredients) {
         try( Connection conn = DriverManager.getConnection(DB_URL)) {
 
             createTableIfNotExists(conn);
             if(isSave) {
                 save(conn, recipeTitle, recipeType, recipeImage, recipeDescription, recipeInstructions, ingredients);
+                return null;
             }
             else {
-                load(conn);
+                return load(conn);
             }
 
         } catch (SQLException e) {
             System.err.println(e.getMessage());
         }
+        return null;
 
     }
 
