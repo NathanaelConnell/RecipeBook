@@ -3,7 +3,6 @@ import java.awt.image.BufferedImage;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.io.OutputStream;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -11,35 +10,7 @@ import java.util.Map;
 
 class RecipeRepo {
 
-    private static final String DB_URL = "jdbc:sqlite:myrecipes.db";
-
-
-    //Make sure you can connect into database
-    public static ArrayList<Recipe> connect(Boolean isSave, String recipeTitle, String recipeType, BufferedImage recipeImage, String recipeDescription, String recipeInstructions,
-                               HashMap<String, IngredientSize> ingredients) {
-        try( Connection conn = DriverManager.getConnection(DB_URL)) {
-
-            createTableIfNotExists(conn);
-            if(isSave) {
-                save(conn, recipeTitle, recipeType, recipeImage, recipeDescription, recipeInstructions, ingredients);
-                return null;
-            }
-            else {
-                return load(conn);
-            }
-
-        } catch (SQLException e) {
-            System.err.println(e.getMessage());
-        }
-        return null;
-
-    }
-
-    public static void enableWALMode(Connection conn) throws SQLException {
-        try (Statement stmt = conn.createStatement()) {
-            stmt.execute("PRAGMA journal_mode=WAL");
-        }
-    }
+    private static final String DB_URL = "jdbc:sqlite:recipes.db";
 
     //Create the database table if the table is not yet created
     private static void createTableIfNotExists(Connection conn) throws SQLException {
@@ -72,88 +43,111 @@ class RecipeRepo {
 
 
     //Save recipe data to database
-    private static void save(Connection conn, String recipeName, String recipeType, BufferedImage recipeImage, String description, String instructions,
-                             HashMap<String, IngredientSize> ingredients) throws SQLException {
-        String sqlRecipe = "INSERT INTO recipes (recipe_name, recipe_type, recipe_image, recipe_description, recipe_instructions) VALUES (?, ?, ?, ?, ?)";
-        try (PreparedStatement recipeStatement = conn.prepareStatement(sqlRecipe, Statement.RETURN_GENERATED_KEYS)) {
-            recipeStatement.setString(1, recipeName);
-            recipeStatement.setString(2, recipeType);
-            ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-            ImageIO.write(recipeImage, "png", outputStream);
-            byte[] imageBytes = outputStream.toByteArray();
-            recipeStatement.setBytes(3, imageBytes);
-            recipeStatement.setString(4, description);
-            recipeStatement.setString(5, instructions);
+    public static void save(Recipe recipe) throws SQLException {
+
+        try( Connection conn = DriverManager.getConnection(DB_URL)) {
+
+            createTableIfNotExists(conn);
+            String sqlRecipe = "INSERT INTO recipes (recipe_name, recipe_type, recipe_image, recipe_description, recipe_instructions) VALUES (?, ?, ?, ?, ?)";
+            try (PreparedStatement recipeStatement = conn.prepareStatement(sqlRecipe, Statement.RETURN_GENERATED_KEYS)) {
+                recipeStatement.setString(1, recipe.getTitle());
+                recipeStatement.setString(2, recipe.getType());
+                ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+                ImageIO.write(recipe.getImage(), "png", outputStream);
+                byte[] imageBytes = outputStream.toByteArray();
+                recipeStatement.setBytes(3, imageBytes);
+                recipeStatement.setString(4, recipe.getDescription());
+                recipeStatement.setString(5, recipe.getInstructions());
 
 
-            recipeStatement.executeUpdate();
+                recipeStatement.executeUpdate();
 
-            ResultSet keys = recipeStatement.getGeneratedKeys();
-            if (keys.next()) {
-                int recipeId = keys.getInt(1);
+                ResultSet keys = recipeStatement.getGeneratedKeys();
+                if (keys.next()) {
+                    int recipeId = keys.getInt(1);
 
-                String sqlIngredient = "INSERT INTO ingredients (ingredient_name, ingredient_amount, recipe_id) VALUES (?, ?, ?)";
-                try (PreparedStatement ingredientStatement = conn.prepareStatement(sqlIngredient)) {
-                    for (Map.Entry<String, IngredientSize> ingredientData : ingredients.entrySet()) {
-                        ingredientStatement.setString(1, ingredientData.getKey());
-                        ingredientStatement.setString(2, ingredientData.getValue().toString());
-                        ingredientStatement.setInt(3, recipeId);
-                        ingredientStatement.executeUpdate();
+                    String sqlIngredient = "INSERT INTO ingredients (ingredient_name, ingredient_amount, recipe_id) VALUES (?, ?, ?)";
+                    try (PreparedStatement ingredientStatement = conn.prepareStatement(sqlIngredient)) {
+                        for (Map.Entry<String, IngredientSize> ingredientData : recipe.getIngredients().entrySet()) {
+                            ingredientStatement.setString(1, ingredientData.getKey());
+                            ingredientStatement.setString(2, ingredientData.getValue().toString());
+                            ingredientStatement.setInt(3, recipeId);
+                            ingredientStatement.executeUpdate();
+                        }
+                        System.out.println("Ingredients added successfully");
                     }
-                    System.out.println("Ingredients added successfully");
                 }
+                System.out.println("Recipes added successfully");
+            } catch (IOException e) {
+                throw new SQLException(e);
             }
-            System.out.println("Recipes added successfully");
-        } catch (IOException e) {
-            throw new RuntimeException(e);
+        } catch (SQLException e) {
+            throw new SQLException(e);
         }
-
     }
 
     //Load recipe data to database
-    private static ArrayList<Recipe> load(Connection conn) throws SQLException {
+    public static ArrayList<Recipe> load() throws SQLException {
         ArrayList<Recipe> recipeList = new ArrayList<>();
+        try( Connection conn = DriverManager.getConnection(DB_URL)) {
+            createTableIfNotExists(conn);
+            String sql = "SELECT * FROM recipes";
+            try (Statement stmt = conn.createStatement()) {
+                ResultSet rs = stmt.executeQuery(sql);
+                while (rs.next()) {
+                    int recipeId = rs.getInt("recipe_id");
+                    String type = rs.getString("recipe_type");
+                    String title = rs.getString("recipe_name");
+                    byte[] image = rs.getBytes("recipe_image");
+                    String description = rs.getString("recipe_description");
+                    String instructions = rs.getString("recipe_instructions");
 
-        String sql = "SELECT * FROM recipes";
-        try (Statement stmt = conn.createStatement()) {
-            ResultSet rs = stmt.executeQuery(sql);
-            while (rs.next()) {
-                int recipeId = rs.getInt("recipe_id");
-                String type = rs.getString("recipe_type");
-                String title = rs.getString("recipe_name");
-                byte[] image = rs.getBytes("recipe_image");
-                String description = rs.getString("recipe_description");
-                String instructions = rs.getString("recipe_instructions");
-
-                BufferedImage recipeImage = null;
-                if (image != null) {
-                    try {
-                        recipeImage = ImageIO.read(new ByteArrayInputStream(image));
-                    } catch (IOException e) {
-                        System.err.println(e.getMessage());
-                    }
-                }
-
-                HashMap<String, IngredientSize> ingredients = new HashMap<>();
-                String sqlIngredient = "SELECT * FROM ingredients WHERE recipe_id = ?";
-                try (PreparedStatement ingredientStatement = conn.prepareStatement(sqlIngredient)) {
-                    ingredientStatement.setInt(1, recipeId);
-                    try (ResultSet rs2 = ingredientStatement.executeQuery()) {
-                        while (rs2.next()) {
-                            String ingredientName = rs2.getString("ingredient_name");
-                            String ingredientAmount = rs2.getString("ingredient_amount");
-                            IngredientSize ingredientSize = IngredientSize.fromString(ingredientAmount);
-                            ingredients.put(ingredientName, ingredientSize);
+                    BufferedImage recipeImage = null;
+                    if (image != null) {
+                        try {
+                            recipeImage = ImageIO.read(new ByteArrayInputStream(image));
+                        } catch (IOException e) {
+                            throw new IOException(e);
                         }
                     }
+
+                    HashMap<String, IngredientSize> ingredients = new HashMap<>();
+                    String sqlIngredient = "SELECT * FROM ingredients WHERE recipe_id = ?";
+                    try (PreparedStatement ingredientStatement = conn.prepareStatement(sqlIngredient)) {
+                        ingredientStatement.setInt(1, recipeId);
+                        try (ResultSet rs2 = ingredientStatement.executeQuery()) {
+                            while (rs2.next()) {
+                                String ingredientName = rs2.getString("ingredient_name");
+                                String ingredientAmount = rs2.getString("ingredient_amount");
+                                IngredientSize ingredientSize = IngredientSize.fromString(ingredientAmount);
+                                ingredients.put(ingredientName, ingredientSize);
+                            }
+                        }
+                    }
+
+                    Recipe recipe = new Recipe(recipeId, title, type, description, recipeImage, instructions, ingredients);
+
+                    recipeList.add(recipe);
                 }
-
-                Recipe recipe = new Recipe(title, type, description, recipeImage, instructions, ingredients);
-                recipe.setId(recipeId);
-
-                recipeList.add(recipe);
             }
+        } catch (SQLException | IOException e) {
+            throw new SQLException(e);
         }
         return recipeList;
     }
+
+    public static void remove(Recipe recipe) throws SQLException {
+        try (Connection conn = DriverManager.getConnection(DB_URL)) {
+            createTableIfNotExists(conn);
+            String sql = "DELETE FROM recipes WHERE recipe_id = ?";
+            try (PreparedStatement pstmt = conn.prepareStatement(sql)) {
+                pstmt.setInt(1, recipe.getId());
+                pstmt.executeUpdate();
+            }
+        } catch (SQLException e) {
+            throw new SQLException(e);
+        }
+    }
+
+
 }

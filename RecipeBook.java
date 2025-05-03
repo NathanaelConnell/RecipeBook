@@ -8,6 +8,7 @@ import java.awt.event.FocusListener;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Objects;
 import java.util.regex.Matcher;
@@ -17,10 +18,17 @@ import java.io.FileWriter;
 
 class RecipeBook {
   //Recipes
-  private static final ArrayList<Recipe> recipes = RecipeRepo.connect(false, null, null,
-          null, null, null, null);
+  private static final ArrayList<Recipe> recipes;
 
-  public static void main(String[] args) {
+    static {
+        try {
+            recipes = RecipeRepo.load();
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public static void main(String[] args) {
     // Main frame
     JFrame mainFrame = new JFrame("Main Panel");
     mainFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -210,7 +218,7 @@ class RecipeBook {
         save(recipe);
         frame.dispose();
         viewRecipe(recipe);
-      } catch (IOException ex) {
+      } catch (IOException | SQLException ex) {
         JOptionPane.showMessageDialog(null, ex.getMessage());
       }
     });
@@ -316,7 +324,7 @@ class RecipeBook {
   }
 
   // Save Recipe
-  private static void save(Recipe recipe) throws IOException {
+  private static void save(Recipe recipe) throws IOException, SQLException {
     boolean invalidRecipe = false;
     String error = "Invalid recipe! Please update the following fields: ";
     if(recipe.getTitle().isEmpty()) {
@@ -338,11 +346,16 @@ class RecipeBook {
     if(invalidRecipe) {
       throw new IOException(error);
     }
-    recipes.add(recipe);
-    ////////////////////////////////////////////////////
-    //CHANGES HERE//
-    ///////////////////////////////////////////////////
-    RecipeRepo.connect(isSave, recipe.getType(), recipe.getTitle(), recipe.getImage(), recipe.getDescription(), recipe.getInstructions(), recipe.getIngredients());
+    try {
+      RecipeRepo.save(recipe);
+      recipes.add(recipe);
+    }
+    catch (SQLException e) {
+      throw new SQLException(error);
+    }
+
+
+
   }
 
   // Look at a recipe
@@ -414,8 +427,14 @@ class RecipeBook {
           JOptionPane.showMessageDialog(null, "Failed to delete grocery list file located at: \n" + groceryList.getAbsolutePath());
         }
       }
-      recipes.remove(recipe);
-      JOptionPane.showMessageDialog(null, "Recipe deleted successfully!");
+      try {
+        RecipeRepo.remove(recipe);
+        recipes.remove(recipe);
+        JOptionPane.showMessageDialog(null, "Recipe deleted successfully!", "Recipe Deleted", JOptionPane.INFORMATION_MESSAGE);
+      } catch (SQLException e) {
+        JOptionPane.showMessageDialog(null, "Failed to delete recipe!");
+      }
+
     }
   }
 

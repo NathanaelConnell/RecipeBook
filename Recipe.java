@@ -6,7 +6,7 @@ import java.awt.Font;
 import java.awt.FontMetrics;
 
 class Recipe {
-    private int id;
+    private final int id;
     private String title;
     private String type;
     private String description;
@@ -23,7 +23,7 @@ class Recipe {
         setDefaultImage();
     }
 
-    public Recipe(String title, String type, String description, BufferedImage image, String instructions, HashMap<String, IngredientSize> ingredients) {
+    public Recipe(int id, String title, String type, String description, BufferedImage image, String instructions, HashMap<String, IngredientSize> ingredients) {
         this.id = id;
         this.title = title;
         this.type = type;
@@ -35,7 +35,7 @@ class Recipe {
 
     public int getId() {return id;}
 
-    public void setId(int id) {this.id = id;}
+    //public void setId(int id) {this.id = id;}
 
     public String getTitle() {return title;}
 
