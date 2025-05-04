@@ -26,7 +26,7 @@ application, while using a database in the back-end.
 ## Build and Run
 Make sure you have maven installed with:
 
-```bash sudo apt install maven```
+```sudo apt install maven```
 
 You can then compile and run the program with:
 
