@@ -24,7 +24,15 @@ application, while using a database in the back-end.
 - Retrieve Recipes
 
 ## Build and Run
-Make sure you have maven installed with this instruction in your terminal: 
+
+### JAR File
+
+Download and run [RecipeBook.jar](RecipeBook_jar/RecipeBook.jar)
+
+### Build and Run with Maven
+
+Alternatively, you can clone this repository. Then, make sure 
+you have maven installed with this instruction in your terminal: 
 
 ```sudo apt install maven```
 
