@@ -1,11 +1,15 @@
-Group Member Names and Jobs:
-1. Olivia Brown: Team Spokesperson
-2. Noah Canen: Team Leader
-3. Cole Connell: Code Development 
-4. Ashlyn Erickson: Product Owner
-5. Adam Pannell: Deployment Manager
-6. Megan Rose: Scrum Master
+#Recipe Book
 
+
+### Group Members: 
+- Olivia Brown: Team Spokesperson
+- Noah Canen: Team Leader
+- Cole Connell: Code Development 
+- Ashlyn Erickson: Product Owner
+- Adam Pannell: Deployment Manager
+- Megan Rose: Scrum Master
+
+### Description
 This project contains an implementation of a recipe book. This recipe
 book will allow the user to create, update, and delete recipes through an
 application, while using a database in the back-end. 
@@ -19,3 +23,11 @@ application, while using a database in the back-end.
 - View Recipe
 - Manage Recipes
 - Retrieve Recipes
+
+## Compiling and Running
+
+## Build and Run
+
+```bash
+mvn compile
+mvn exec:java
