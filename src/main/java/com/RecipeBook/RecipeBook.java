@@ -18,7 +18,7 @@ import java.util.regex.Pattern;
 import java.io.BufferedWriter;
 import java.io.FileWriter;
 
-class RecipeBook {
+public class RecipeBook {
   //Recipes
   private static final ArrayList<Recipe> recipes;
 
@@ -31,36 +31,36 @@ class RecipeBook {
     }
 
     public static void main(String[] args) {
-    // Main frame
-    JFrame mainFrame = new JFrame("Main Panel");
-    mainFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-    mainFrame.setSize(300, 200);
-    mainFrame.setLayout(new BorderLayout());
+      // Main frame
+      JFrame mainFrame = new JFrame("Main Panel");
+      mainFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+      mainFrame.setSize(300, 200);
+      mainFrame.setLayout(new BorderLayout());
 
-    // Panel for buttons
-    JPanel buttonPanel = new JPanel(new FlowLayout());
+      // Panel for buttons
+      JPanel buttonPanel = new JPanel(new FlowLayout());
 
-    // Create buttons
-    JButton button1 = new JButton("Look For Recipes");
-    JButton button2 = new JButton("Create Recipe");
+      // Create buttons
+      JButton button1 = new JButton("Look For Recipes");
+      JButton button2 = new JButton("Create Recipe");
 
-    // Add action listeners to buttons
-    button1.addActionListener(e -> openRecipesFrame());
+      // Add action listeners to buttons
+      button1.addActionListener(e -> openRecipesFrame());
 
-    button2.addActionListener(e -> {
-      Recipe recipe = new Recipe();
-      recipeTemplate(recipe);
-    });
+      button2.addActionListener(e -> {
+        Recipe recipe = new Recipe();
+        recipeTemplate(recipe);
+      });
 
-    // Add buttons to panel
-    buttonPanel.add(button1);
-    buttonPanel.add(button2);
+      // Add buttons to panel
+      buttonPanel.add(button1);
+      buttonPanel.add(button2);
 
-    // Add button panel to main frame
-    mainFrame.add(buttonPanel, BorderLayout.CENTER);
+      // Add button panel to main frame
+      mainFrame.add(buttonPanel, BorderLayout.CENTER);
 
-    // Make the frame visible
-    mainFrame.setVisible(true);
+      // Make the frame visible
+      mainFrame.setVisible(true);
   }
 
   // Create/Edit Recipe
