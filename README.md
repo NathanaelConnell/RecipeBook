@@ -15,7 +15,6 @@ book will allow the user to create, update, and delete recipes through an
 application, while using a database in the back-end. 
 
 ### Use Cases
-
 - Create Recipe
 - Delete Recipe
 - Edit Recipe
@@ -24,9 +23,10 @@ application, while using a database in the back-end.
 - Manage Recipes
 - Retrieve Recipes
 
-## Compiling and Running
-
 ## Build and Run
+Make sure you have maven installed with:
+
+```sudo apt install maven```
 
 ```bash
 mvn compile
