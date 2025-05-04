@@ -24,7 +24,7 @@ application, while using a database in the back-end.
 - Retrieve Recipes
 
 ## Build and Run
-Make sure you have maven installed by entering this in your terminal: 
+Make sure you have maven installed with this instruction in your terminal: 
 
 ```sudo apt install maven```
 
