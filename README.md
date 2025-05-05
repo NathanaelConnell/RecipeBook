@@ -25,10 +25,11 @@ application, while using a database in the back-end.
 
 ## Build and Run
 
-### JAR File
+### Executable
 
-Download the [RecipeBook_jar](RecipeBook_jar) directory. Inside is a .jar 
-file. This should run as long as you have a JDK on your device. 
+Download and run [RecipeBook.exe](Executables/RecipeBook.exe) to run on windows. 
+You can also download and run [RecipeBook.jar](Executables/RecipeBook.jar) on any 
+platform as long as you have a JRE. 
 
 ### Build and Run with Maven
 
