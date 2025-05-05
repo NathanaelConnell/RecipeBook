@@ -27,7 +27,7 @@ application, while using a database in the back-end.
 
 ### JAR File
 
-Download the [RecipeBook.jar](RecipeBook_jar) directory. Inside is a .jar 
+Download the [RecipeBook_jar](RecipeBook_jar) directory. Inside is a .jar 
 file. This should run as long as you have a JDK on your device. 
 
 ### Build and Run with Maven
