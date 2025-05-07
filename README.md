@@ -27,8 +27,7 @@ application, while using a database in the back-end.
 
 ### Executable
 
-Download and run [RecipeBook.exe](Executables/RecipeBook.exe) for Windows. 
-You can also download and run [RecipeBook.jar](Executables/RecipeBook.jar) on any 
+Download and run [RecipeBook.jar](Executables/RecipeBook.jar) on any 
 platform as long as you have a JRE. 
 
 ### Build and Run with Maven
